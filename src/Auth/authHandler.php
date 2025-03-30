@@ -12,9 +12,10 @@
       }
 
       public function authenticateUser(string $email, string $password){
-
+         
          try{
             $user = $this->userModel->getUserByEmail($email);
+            
             if($user && password_verify($password, $user['password'])){
                $token = JWTHandler::generateToken($user['id'], $user['name']);
                setcookie('JWTToken', $token, [
@@ -25,15 +26,13 @@
                   'samesite' => 'Strict'       //Avoid other sites accsses
                ]);
                http_response_code(200);
-               header('Content-Type: application/json');
-               echo json_encode(['message' => 'User authenticated successfuly']);
+               echo json_encode(['message' => 'User successfuly authenticated']);
                exit;
             }
 
          }catch(Exception $e){
-            http_response_code(401);
-            header('Content-Type: application/json');
-            echo json_encode(['message' => 'Invalid credentials']);
+            http_response_code($e->getCode());
+            echo json_encode(['message' => $e->getMessage()]);
          }
       }
 
@@ -45,16 +44,17 @@
             try{
                $this->userModel->createUser($id, $name, $email, $lastname, $startDate , $hashedPassword);
                http_response_code(200);
-               header('Content-Type = application/json');
                echo json_encode(['message' => 'User created successfuly']);
                exit;
             }catch(Exception $e){
                http_response_code($e->getCode());
-               header('Content-Type = application/json');
                echo json_encode(['message' => $e->getMessage()]);
                exit;
             }
          };
+         http_response_code(400);
+         echo json_encode(['message' => 'All fields are required']);
+         exit;
       }
    }
 ?>

@@ -9,17 +9,17 @@
       }
 
       public function getUserByEmail(string $email):array{
-         $stmt = new $this->pdo->prepare('SELECT * FROM `users` WHERE `email` = :email');
+         // echo json_encode($email);exit;
+         $stmt = $this->pdo->prepare('SELECT * FROM `users` WHERE `email` = :email');
          $stmt->bindValue(':email', $email);
          $stmt->execute();
+
          $result = $stmt->fetch(PDO::FETCH_ASSOC);
-         
          if(!$result){
-            throw new Exception('User not found');
+            throw new Exception('User not found', 400);
             exit;
          }
          return $result;
-
       }
 
       public function createUser(string $id, string $name, string $email, string $lastname, string $startDate  , string $password):bool{
