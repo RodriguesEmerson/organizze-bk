@@ -1,6 +1,7 @@
 <?php 
 
-   require_once __DIR__ . '/../../src/Models/user.php';
+   require_once __DIR__ . '/../Models/user.php';
+   require_once __DIR__ . '/../Helpers/utils.php';
    require_once __DIR__ . '/JWT/JWT.php';
 
    class AuthHandler{
@@ -11,8 +12,8 @@
       }
 
       public function authenticateUser(string $email, string $password){
-         try{
 
+         try{
             $user = $this->userModel->getUserByEmail($email);
             if($user && password_verify($password, $user['password'])){
                $token = JWTHandler::generateToken($user['id'], $user['name']);
@@ -39,18 +40,18 @@
       public function createUser(string $id, string $name, string $lastname,  string $email, string $password){
          if(!empty($id) && !empty($name) && !empty($lastname) && !empty($email) && !empty($password)){
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $startDate = '';
+            $startDate = getDateWithTimezone('America/Sao_Paulo');
+            // echo json_encode(['m' => $startDate]);exit;
             try{
                $this->userModel->createUser($id, $name, $email, $lastname, $startDate , $hashedPassword);
-               // echo json_encode(['m' => $hashedPassword]);exit;
                http_response_code(200);
                header('Content-Type = application/json');
                echo json_encode(['message' => 'User created successfuly']);
                exit;
             }catch(Exception $e){
-               http_response_code($e['code']);
+               http_response_code($e->getCode());
                header('Content-Type = application/json');
-               echo json_encode(['message' => $e['message']]);
+               echo json_encode(['message' => $e->getMessage()]);
                exit;
             }
          };
