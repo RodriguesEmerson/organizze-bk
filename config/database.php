@@ -3,7 +3,7 @@
    class Database{
       private static $pdo;
 
-      public function getConnection(){
+      public static function getConnection(){
          if(!self::$pdo){ //It checks if has already a connection
 
             $db = getenv('DB_NAME');
@@ -21,7 +21,6 @@
                die();
             }
          }
-         var_dump(self::$pdo);
          return self::$pdo;
       }
    }

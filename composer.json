@@ -1,0 +1,17 @@
+{
+    "name": "emers/organizze-bk",
+    "autoload": {
+        "psr-4": {
+            "Emers\\OrganizzeBk\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Emerson Rodrigues",
+            "email": "119687303+RodriguesEmerson@users.noreply.github.com"
+        }
+    ],
+    "require": {
+        "firebase/php-jwt": "^6.11"
+    }
+}

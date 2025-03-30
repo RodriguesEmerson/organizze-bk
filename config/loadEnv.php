@@ -1,7 +1,7 @@
 <?php 
    function loadEnv($file = __DIR__ . '/../.env'){
       if(!file_exists($file)){
-         die('Erro: File .env not found. Way:' . realpath($file));
+         die('Erro: File .env not found. Directory:' . realpath($file));
       }
 
       $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES); //It ignores empty lines;
