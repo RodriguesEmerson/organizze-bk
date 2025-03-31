@@ -39,8 +39,13 @@
       <input type="text" name="value" value="100,50">
    </form>
 
+   <div >
+      <input type="button" value="Signout" style="margin-top: 10px; cursor: pointer;" id="signoutButton">
+   </div>
+
    <script>
       const form = document.querySelector('#formId');
+      const signoutButton = document.querySelector('#signoutButton');
 
       form.addEventListener('submit', () => {
          const formData = new FormData(form);
@@ -48,6 +53,17 @@
          data.id = gerarCUID();
 
       });
+
+      signoutButton.addEventListener('click', async () => {
+         const request = await fetch('http://localhost/organizze-bk/public/signout.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+         })
+         const result = await request.json();
+         if(result.success){
+            window.location.href = `${result.redirect}`;
+         }
+      })
 
       async function saveEntry(data){
          const resquest = await fetch('http://localhost/organizze-bk/public/entries.php', {
@@ -59,6 +75,8 @@
          const result = await resquest.json();
          console.log(result);
       }
+
+
 
       function gerarCUID() {
          const timestamp = Date.now().toString(36); // Base36 para reduzir o tamanho

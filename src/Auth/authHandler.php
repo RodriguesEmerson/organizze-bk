@@ -41,6 +41,23 @@
          }
       }
 
+      public static function signout(){
+         setcookie('JWTToken', '', [
+                  'expires' => time() - 3600,  //Delete the cookie
+                  'path' => '/',
+                  'httponly' => true,
+                  'secure' => true,
+                  'samesite' => 'Strict'
+         ]);
+
+         http_response_code(200);
+         echo json_encode([
+            'success' => true,
+            'message' => 'User signed out succssfuly',
+            'redirect' => 'http://localhost/organizze-bk/signin.php'
+         ]);
+      }
+
       public function createUser(string $id, string $name, string $lastname,  string $email, string $password){
          if(!empty($id) && !empty($name) && !empty($lastname) && !empty($email) && !empty($password)){
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);

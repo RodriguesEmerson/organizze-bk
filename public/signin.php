@@ -1,5 +1,5 @@
 <?php 
-   require __DIR__ . '/../src/Helpers/headerTop.config.inc.php';
+   require __DIR__ . '/../src/inc/headerTop.config.inc.php';
 
    if($request == 'signin.php' && $method == 'POST'){
       require __DIR__ . '/../src/Auth/authHandler.php';
