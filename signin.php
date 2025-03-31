@@ -1,4 +1,22 @@
-<!DOCTYPE html>
+<?php 
+   $token = $_COOKIE['JWTToken']  ?? null;
+   $optons = [
+      'http' => [
+         'method' => 'POST',
+         'header' => 
+            "Content-Type: applicaton\r\n" .
+            "Authorization: Bearer $token\r\n",
+         'time' => 10
+      ]
+   ];
+    $context = stream_context_create($optons);
+    $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
+
+    if($token && $validToken){
+       header('Location: http://localhost/organizze-bk/teste.php');
+       die();
+    }
+?><!DOCTYPE html>
 <html lang="pt">
 <head>
    <meta charset="UTF-8">
@@ -6,7 +24,7 @@
    <title>Document</title>
 </head>
 <body>
-   <form id="formID" >
+   <form id="formID">
       <input type="email" name="email" placeholder="E-mail" value="emerson@teste.com">
       <input type="password" name="password" placeholder="Password" value="12345567">
       <input type="submit" value="SignIn">

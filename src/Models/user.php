@@ -33,7 +33,7 @@
             $stmt->bindValue(':email', $email);
             $stmt->bindValue(':start_date', $startDate);
             $stmt->bindValue(':password', $password);
-            // echo json_encode('message');exit;
+            
             try{
                $stmt->execute();
                return true;

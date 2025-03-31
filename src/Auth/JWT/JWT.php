@@ -21,7 +21,7 @@
          return JWT::encode($payload, self::$secret_key, 'HS256');
       }
 
-      public function validateToken($token){
+      public static function validateToken($token){
          try{
             self::$secret_key = getenv('JWT_SECRET_KEY');
             return JWT::decode($token, new Key(self::$secret_key, 'HS256'));

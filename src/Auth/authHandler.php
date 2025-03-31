@@ -25,7 +25,9 @@
                   'secure' => true,            //Only HTTPS
                   'samesite' => 'Strict'       //Avoid other sites accsses
                ]);
+               
                http_response_code(200);
+               // header('Location: http://localhost/organizze-bk/teste.php');
                echo json_encode(['message' => 'User successfuly authenticated']);
                exit;
             }
