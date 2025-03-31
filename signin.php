@@ -1,21 +1,23 @@
 <?php 
    $token = $_COOKIE['JWTToken']  ?? null;
-   $optons = [
-      'http' => [
-         'method' => 'POST',
-         'header' => 
-            "Content-Type: applicaton\r\n" .
-            "Authorization: Bearer $token\r\n",
-         'time' => 10
-      ]
-   ];
-    $context = stream_context_create($optons);
-    $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
-
-    if($token && $validToken){
-       header('Location: http://localhost/organizze-bk/teste.php');
-       die();
-    }
+   
+   if($token){
+      $optons = [
+         'http' => [
+            'method' => 'POST',
+            'header' => 
+               "Content-Type: applicaton\r\n" .
+               "Authorization: Bearer $token\r\n",
+            'time' => 10
+         ]
+      ];
+      $context = stream_context_create($optons);
+      $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
+      if($validToken){
+         header('Location: http://localhost/organizze-bk/teste.php');
+         die();
+      }
+   }
 ?><!DOCTYPE html>
 <html lang="pt">
 <head>
@@ -45,7 +47,12 @@
          })
 
          const result = await response.json();
-         console.log(result);
+
+         if(result.success){
+            window.location.href = `${result.redirect}`;
+         }else{
+            console.log('Invalid credentials')
+         }
       }  
 
       </script>

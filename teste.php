@@ -1,18 +1,23 @@
 <?php 
    $token = $_COOKIE['JWTToken']  ?? null;
-   $options = [
-      'http' => [
-         'method' => 'POST',
-         'header' => 
+
+   if($token){
+      $options = [
+         'http' => [
+            'method' => 'POST',
+            'header' => 
             "Content-Type: application/json\r\n" . 
             "Authorization: Bearer $token\r\n",
-         'timeout' => 10,
-      ]
-   ];
-   $context = stream_context_create($options);
-   $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
-
-   if(!$token || !$validToken){
+            'timeout' => 10,
+            ]
+      ];
+      $context = stream_context_create($options);
+      $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
+      if(!$validToken){
+         header('Location: http://localhost/organizze-bk/signin.php');
+         die();
+      }
+   }else{
       header('Location: http://localhost/organizze-bk/signin.php');
       die();
    }

@@ -8,7 +8,7 @@
       private $userModel;
 
       public function __construct(){
-         $this->userModel = new User;
+         $this->userModel = new User();
       }
 
       public function authenticateUser(string $email, string $password){
@@ -27,8 +27,11 @@
                ]);
                
                http_response_code(200);
-               // header('Location: http://localhost/organizze-bk/teste.php');
-               echo json_encode(['message' => 'User successfuly authenticated']);
+               echo json_encode([
+                  'success' => true,
+                  'message' => 'Successful login',
+                  'redirect' => 'http://localhost/organizze-bk/teste.php'
+               ]);
                exit;
             }
 

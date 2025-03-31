@@ -3,9 +3,7 @@
    require_once __DIR__ . '/../src/Auth/JWT/JWT.php';
 
    $headers = apache_request_headers();
-   
    $headerToken = $headers['Authorization'] ?? null;
-   
    
    if(empty($headerToken)) $headerToken = null;
    $cookeToken = $_COOKIE['JWTToken'] ?? null;
@@ -23,5 +21,4 @@
       http_response_code(401);
       echo json_encode(['message' => 'Invalid token']);
    }
-
 ?>
