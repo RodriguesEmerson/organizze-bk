@@ -12,7 +12,6 @@
       }
 
       public function authenticateUser(string $email, string $password){
-         
          try{
             $user = $this->userModel->getUserByEmail($email);
             

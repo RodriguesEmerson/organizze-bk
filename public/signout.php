@@ -7,8 +7,10 @@
    if($request == 'signout.php' && $method == 'POST'){
       if($token && JWTHandler::validateToken($token)){
          AuthHandler::signout();
-        
+         exit;
       }
-   }
 
+      http_response_code(500);
+      echo json_encode(['message' => 'Internal server error.']);
+   }
 ?>
