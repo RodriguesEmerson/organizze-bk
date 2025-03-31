@@ -26,16 +26,18 @@
 
          try{
             foreach($data AS $field => $value){
-               if(in_array($field, ['value', 'fixed'])) continue;
-
-               if(in_array($field, ['date', 'end_date'])){
-                  Validators::validateDateYMD($value);
-               }else{
-                  Validators::validateString($value, 255, 0);
-               }
+               if(in_array($field, ['value', 'fixed', 'date', 'end_date'])) continue;
+               Validators::validateString($value, 255, 0);
             }
+
             Validators::validateFloat($data['value']);
             Validators::validateBool($data['fixed']);
+            Validators::validateDateYMD($data['date']);
+            
+            if($data['fixed']){
+               Validators::validateDateYMD($data['end_date']);
+            }
+
 
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());

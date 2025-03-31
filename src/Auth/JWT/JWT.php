@@ -29,6 +29,18 @@
             return false;
          }
       }
+
+      public static function getUserId(string $token):string|bool{
+         if($token){
+            try{
+               $decoded = JWT::decode($token, new key(self::$secret_key, 'HS256'));
+               return $decoded->userId; //Authenticated user id;
+            }catch(Exception $e){
+               return false;
+            }
+         }
+         return false;
+      }
    }
 
 ?>

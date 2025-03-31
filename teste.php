@@ -37,6 +37,7 @@
       <input type="checkbox" name="fixed" checked>
       <input type="text" name="endDate" value="30/04/2025">
       <input type="text" name="value" value="100,50">
+      <input type="submit" value="Save">
    </form>
 
    <div >
@@ -47,23 +48,14 @@
       const form = document.querySelector('#formId');
       const signoutButton = document.querySelector('#signoutButton');
 
-      form.addEventListener('submit', () => {
+      form.addEventListener('submit', (e) => {
+         e.preventDefault();
          const formData = new FormData(form);
          const data = Object.fromEntries(formData.entries());
          data.id = gerarCUID();
-
+         data.icon = 'images/icon.png'
+         saveEntry(data);
       });
-
-      signoutButton.addEventListener('click', async () => {
-         const request = await fetch('http://localhost/organizze-bk/public/signout.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'}
-         })
-         const result = await request.json();
-         if(result.success){
-            window.location.href = `${result.redirect}`;
-         }
-      })
 
       async function saveEntry(data){
          const resquest = await fetch('http://localhost/organizze-bk/public/entries.php', {
@@ -76,6 +68,16 @@
          console.log(result);
       }
 
+      signoutButton.addEventListener('click', async () => {
+         const request = await fetch('http://localhost/organizze-bk/public/signout.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'}
+         })
+         const result = await request.json();
+         if(result.success){
+            window.location.href = `${result.redirect}`;
+         }
+      })
 
 
       function gerarCUID() {
