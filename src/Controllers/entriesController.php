@@ -1,6 +1,7 @@
 <?php 
    require_once __DIR__ . '/../Models/entries.php';
    require_once __DIR__ . '/../Helpers/validators.php';
+   require_once __DIR__ . '/../Helpers/utils.php';
 
    class EntriesController{
       private $entriesModel;
@@ -10,8 +11,7 @@
       }
 
       public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $date, bool $fixed,
-      string $end_date, string $icon, float $value){
-         
+      string $end_date, string $icon, string $value){
          $data = [
             'id' => $id,
             'foreing_key' => trim($foreing_key),
@@ -23,29 +23,45 @@
             'icon' => trim($icon),
             'value' => $value,
          ];
-
+         
          try{
             foreach($data AS $field => $value){
                if(in_array($field, ['value', 'fixed', 'date', 'end_date'])) continue;
                Validators::validateString($value, 255, 0);
             }
-
-            Validators::validateFloat($data['value']);
+            
             Validators::validateBool($data['fixed']);
+            
+            $data['date'] = Utils::formatDateToYmd($data['date']);
             Validators::validateDateYMD($data['date']);
             
+            
             if($data['fixed']){
+               $data['end_date'] = Utils::formatDateToYmd($data['end_date']);
                Validators::validateDateYMD($data['end_date']);
             }
-
-
+            
+            $data['value'] = Utils::formatToNumericNumber($data['value']);
+            Validators::validateFloat($data['value']);
+            
+            
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
             echo json_encode(['message' => $e->getMessage()]);
             exit;
          }
+         // echo json_encode($data);exit;
+         try{
+            $this->entriesModel->insertEntry($data);
+            http_response_code(201);
+            echo json_encode(['message' => 'New entry successfuly saved']);
 
-         $this->entriesModel->insertEntry($data);
+         }catch(Exception $e){
+            http_response_code($e->getCode());
+            echo json_encode(['message' => $e->getMessage()]);
+            exit;
+         }
+         
       }
    }
 ?>
