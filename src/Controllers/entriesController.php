@@ -20,13 +20,14 @@
             'date' => trim($date),
             'fixed' => $fixed,
             'end_date' => trim($end_date),
+            'last_edition' => Utils::getDateWithTimezone('America/Sao_Paulo'),
             'icon' => trim($icon),
             'value' => $value,
          ];
-         
+         //Validating data
          try{
             foreach($data AS $field => $value){
-               if(in_array($field, ['value', 'fixed', 'date', 'end_date'])) continue;
+               if(in_array($field, ['value', 'fixed', 'date', 'end_date', 'last_edition'])) continue;
                Validators::validateString($value, 255, 0);
             }
             
@@ -50,18 +51,18 @@
             echo json_encode(['message' => $e->getMessage()]);
             exit;
          }
-         // echo json_encode($data);exit;
+
          try{
             $this->entriesModel->insertEntry($data);
             http_response_code(201);
             echo json_encode(['message' => 'New entry successfuly saved']);
+            exit;
 
          }catch(Exception $e){
-            http_response_code($e->getCode());
-            echo json_encode(['message' => $e->getMessage()]);
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
             exit;
          }
-         
       }
    }
 ?>
