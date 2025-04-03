@@ -10,8 +10,22 @@
          $this->entriesModel = new EntriesModel();
       }
 
+      public function getEntries($userId):void{
+         
+         try{
+            $result = $this->entriesModel->getEntries($userId);
+            http_response_code(200);
+            echo json_encode($result);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error.']);
+            exit;
+         }
+      }
+
       public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $date, bool $fixed,
-      string $end_date, string $icon, string $value){
+      string $end_date, string $icon, string $value):void{
          $data = [
             'id' => $id,
             'foreing_key' => trim($foreing_key),
@@ -28,7 +42,7 @@
          try{
             foreach($data AS $field => $value){
                if(in_array($field, ['value', 'fixed', 'date', 'end_date', 'last_edition'])) continue;
-               Validators::validateString($value, 255, 0);
+               Validators::validateString($value, 255, 1);
             }
             
             Validators::validateBool($data['fixed']);
@@ -57,12 +71,38 @@
             http_response_code(201);
             echo json_encode(['message' => 'New entry successfuly saved']);
             exit;
-
          }catch(Exception $e){
             http_response_code(500);
             echo json_encode(['message' => 'Internal server error']);
             exit;
          }
+      }
+
+      public function updateEntry(array $data, string $userId):void{
+         try{
+            foreach($data AS $field => $value){
+               match(true){
+                  in_array($field, ['date', 'end_date', 'last_edition']) => $data[$field] = Utils::formatDateToYmd($value),
+                  $field === 'value' => $data[$field] = Utils::formatToNumericNumber($value),
+                  default => $data[$field] = trim($value),
+               };
+            }
+
+            foreach($data AS $field => $value){
+               match(true){
+                  in_array($field, ['date', 'end_date', 'last_edition']) => Validators::validateDateYMD($value),
+                  $field === 'fixed' => Validators::validateBool($data['fixed']),
+                  $field === 'value' => Validators::validateFloat($value),
+                  default => Validators::validateString($value, 255, 1),
+               };
+            }
+         }catch(InvalidArgumentException $e){
+            http_response_code($e->getCode());
+            echo json_encode($e->getMessage());
+            exit;
+         }
+
+         echo json_encode($data);
       }
    }
 ?>

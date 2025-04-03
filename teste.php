@@ -30,7 +30,21 @@
    <title>Document</title>
 </head>
 <body>
-   <form action="" id="formId">
+   <form action="" id="formId" style="margin-bottom: 20px;">
+      <input type="text" name="desc" value="Teste-1">
+      <input type="text" name="categ" value="Category-1">
+      <input type="text" name="date" value="30/03/2025">
+      <input type="checkbox" name="fixed" checked>
+      <input type="text" name="endDate" value="30/04/2025">
+      <input type="text" name="value" value="100,50">
+      <input type="submit" value="Save">
+   </form>
+
+   <div id="table">
+      
+   </div>
+
+   <form action="" id="editId" style="margin-top: 20px;">
       <input type="text" name="desc" value="Teste-1">
       <input type="text" name="categ" value="Category-1">
       <input type="text" name="date" value="30/03/2025">
@@ -46,7 +60,16 @@
 
    <script>
       const form = document.querySelector('#formId');
+      const editForm = document.querySelector('#editId');
       const signoutButton = document.querySelector('#signoutButton');
+
+      (async function(){
+         const request = await fetch('http://localhost/organizze-bk/public/entries.php', {
+            method: 'GET'
+         });
+         const data = await request.json();
+         console.log(data);
+      })();
 
       form.addEventListener('submit', (e) => {
          e.preventDefault();
@@ -56,6 +79,15 @@
          data.icon = 'images/icon.png'
          saveEntry(data);
       });
+
+      editForm.addEventListener('submit', (e) => {
+         e.preventDefault();
+         const formData = new FormData(form);
+         const data = Object.fromEntries(formData.entries());
+         data.id = gerarCUID();
+         data.icon = 'images/icon.png'
+         saveEntry(data);
+      })
 
       async function saveEntry(data){
          const resquest = await fetch('http://localhost/organizze-bk/public/entries.php', {
@@ -78,6 +110,8 @@
             window.location.href = `${result.redirect}`;
          }
       })
+
+      
 
 
       function gerarCUID() {

@@ -8,6 +8,19 @@
          $this->pdo = Database::getConnection();
       }
 
+      public function getEntries(string $userId):array|bool{
+         $stmt = $this->pdo->prepare('SELECT * FROM `entries` WHERE `foreing_key` = :userID ORDER BY `date` DESC LIMIT 10');
+         $stmt->bindValue(':userID', $userId);
+         $stmt->execute();
+         // try{
+         //    echo json_encode($stmt->execute());exit;
+            
+         // }catch(Exception $e){
+         //    echo json_encode($e->getMessage());exit;
+         // }
+         return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+
       public function insertEntry(array $data):bool{
 
          $query = [];
@@ -28,13 +41,6 @@
          $stmt = $this->pdo->prepare($sql);
 
          return ($stmt->execute($params));
-         //Depuring
-         // try{
-         //    $stmt->execute($params);
-         // }catch(Exception $e){
-         //    echo json_encode($e->getMessage());
-         //    exit;
-         // }
       }
    }
 ?>
