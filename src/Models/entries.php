@@ -9,7 +9,14 @@
       }
 
       public function getEntries(string $userId):array|bool{
-         $stmt = $this->pdo->prepare('SELECT * FROM `entries` WHERE `foreing_key` = :userID ORDER BY `date` DESC LIMIT 10');
+         $stmt = $this->pdo->prepare(
+            'SELECT `id`, `description`, `category`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+             FROM `entries` 
+             WHERE `foreing_key` = :userID 
+             ORDER BY `date` 
+             DESC 
+             LIMIT 10'
+         );
          $stmt->bindValue(':userID', $userId);
          $stmt->execute();
          // try{
