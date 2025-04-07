@@ -31,14 +31,17 @@ use Firebase\JWT\JWT;
                echo json_encode([
                   'success' => true,
                   'message' => 'Successful login',
-                  'redirect' => 'http://localhost/organizze-bk/teste.php'
+                  'redirect' => 'http://localhost/organizze-bk/front/teste.php'
                ]);
                exit;
             }
 
          }catch(Exception $e){
-            http_response_code($e->getCode());
-            echo json_encode(['message' => $e->getMessage()]);
+            http_response_code(400);
+            echo json_encode([
+               'success' => false,
+               'message' => 'Invalid credentials'
+            ]);
          }
       }
 
@@ -56,7 +59,7 @@ use Firebase\JWT\JWT;
             echo json_encode([
                'success' => true,
                'message' => 'User signed out succssfuly',
-               'redirect' => 'http://localhost/organizze-bk/signin.php'
+               'redirect' => 'http://localhost/organizze-bk/front/signin.php'
             ]);
          }catch(Exception $e){
             http_response_code(500);

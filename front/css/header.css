@@ -1,0 +1,16 @@
+header{
+   height: 60px;
+   background-color: rgb(103, 0, 103);
+   color: white;
+   padding-left: 20px;
+   align-content: center;
+   text-align: center;
+
+   & h1{
+      font-size: 25px;
+   }
+
+   & p{
+      font-size: 13px;
+   }
+}

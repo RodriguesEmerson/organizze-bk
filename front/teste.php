@@ -14,7 +14,7 @@
       $context = stream_context_create($options);
       $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
       if(!$validToken){
-         header('Location: http://localhost/organizze-bk/signin.php');
+         header('Location: http://localhost/organizze-bk/front/signin.php');
          die();
       }
    }else{

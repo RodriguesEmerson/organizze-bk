@@ -14,23 +14,41 @@
       $context = stream_context_create($optons);
       $validToken =  file_get_contents('http://localhost/organizze-bk/public/validatetoken.php', false, $context);
       if($validToken){
-         header('Location: http://localhost/organizze-bk/teste.php');
+         header('Location: http://localhost/organizze-bk/front/teste.php');
          die();
       }
    }
+
+   
 ?><!DOCTYPE html>
 <html lang="pt">
 <head>
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Signin Page</title>
+   <link rel="stylesheet" href="./css/global.css">
+   <link rel="stylesheet" href="./css/signig.css">
+   <link rel="stylesheet" href="./css/header.css">
 </head>
 <body>
-   <form id="formID">
-      <input type="email" name="email" placeholder="E-mail" value="emerson@teste.com">
-      <input type="password" name="password" placeholder="Password" value="12345567">
-      <input type="submit" value="SignIn">
-   </form>
+   <?php 
+      require __DIR__ . '/header.inc.php';
+   ?>
+   <main>
+      <div id="form-box">
+         <h2>Login</h2>
+         <form id="formID">
+            <label for="email">E-mail</label>
+            <input type="email" name="email" id="email" placeholder="E-mail" value="emerson@teste.com">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" placeholder="Password" value="12345567">
+            <input type="submit" value="SignIn">
+         </form>
+
+         <p id="wornning">Invalid credentials, please try again.</p>
+
+      </div>
+   </main>
 
    <script>
       const form = document.querySelector('#formID');
@@ -39,20 +57,24 @@
          e.preventDefault();
          const formData = new FormData(form);
          const data = Object.fromEntries(formData.entries());
-         
+        
          const response = await fetch('http://localhost/organizze-bk/public/signin.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(data)
          })
-
-         const result = await response.json();
-
-         if(result.success){
-            window.location.href = `${result.redirect}`;
-         }else{
-            console.log('Invalid credentials')
-         }
+         .then(response => {{
+            return response.json();
+         }})
+         .then(response => {
+            if(response.success){
+               window.location = response.redirect;
+            }
+         })
+         .catch(erro => {
+            const wornning = document.querySelector('#wornning');
+            wornning.style.display = 'block';
+         })
       }  
 
       </script>
