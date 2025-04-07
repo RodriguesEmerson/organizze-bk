@@ -5,6 +5,7 @@ header{
    padding-left: 20px;
    align-content: center;
    text-align: center;
+   font-family: Arial, Helvetica, sans-serif;
 
    & h1{
       font-size: 25px;

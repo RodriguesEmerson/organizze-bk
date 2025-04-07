@@ -16,6 +16,7 @@
             exit;
          break;
          case 'POST':
+            //Adicionar novo campo "Type"
             $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
             $entriesController->insertEntry($data['id'], $userId, $data['description'], $data['category'], $data['date'], $data['fixed'], $data['end_date'], $data['icon'], $data['value']);
             exit;

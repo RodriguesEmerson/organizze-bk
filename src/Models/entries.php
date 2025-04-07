@@ -10,7 +10,7 @@
 
       public function getEntries(string $userId):array|bool{
          $stmt = $this->pdo->prepare(
-            'SELECT `id`, `description`, `category`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+            'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
              FROM `entries` 
              WHERE `foreing_key` = :userID 
              ORDER BY `date` 
