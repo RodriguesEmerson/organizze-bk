@@ -79,11 +79,12 @@
       }
 
       public function updateEntry(array $data, string $userId):void{
+         $data['foreing_key'] = $userId;
+         $data['last_edition'] = Utils::getDateWithTimezone('America/Sao_Paulo');
          try{
             foreach($data AS $field => $value){
                match(true){
-                  // in_array($field, ['date', 'end_date', 'last_edition']) => $data[$field] = Utils::formatDateToYmd($value),
-                  $field === 'value' => $data[$field] = Utils::formatToNumericNumber($value),
+                  $field === 'value' => $data[$field] = (float) $data[$field],
                   default => $data[$field] = trim($value),
                };
             }
@@ -102,7 +103,17 @@
             exit;
          }
 
-         echo json_encode(['message' => $data]);
+
+         try{
+            $this->entriesModel->updateEntry($data);
+            http_response_code(200);
+            echo json_encode(['message' => 'Entry updated successfuly', 'code' => '200']);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
+            exit;
+         }
       }
    }
 ?>

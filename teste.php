@@ -175,7 +175,7 @@
             data.fixed == 'on' ? data.fixed = 1 : data.fixed = 0;
             data.value = data.value.replace('.','');
             data.value = data.value.replace(',','.');
-            data.value = data.value.slice(2);
+            data.value = data.value.slice(3);
             if(data.fixed == 1){
                data.end_date = formatToYdmDate(data.end_date);
             }

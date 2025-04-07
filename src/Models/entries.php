@@ -19,28 +19,22 @@
          );
          $stmt->bindValue(':userID', $userId);
          $stmt->execute();
-         // try{
-         //    echo json_encode($stmt->execute());exit;
-            
-         // }catch(Exception $e){
-         //    echo json_encode($e->getMessage());exit;
-         // }
          return  $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
       public function insertEntry(array $data):bool{
 
-         $query = [];
+         $keys = [];
          $params = [];
          $placeholders = [];
          
          foreach($data AS $field => $value){
-            $query[] = "`$field`";
+            $keys[] = "`$field`";
             $placeholders[] = ":$field";
             $params[":$field"] = $value;
          }
 
-         $fields = implode(',', $query);
+         $fields = implode(',', $keys);
          $placeholders = implode(',' , $placeholders);
 
          //Puting together the SQL Query.
@@ -48,6 +42,26 @@
          $stmt = $this->pdo->prepare($sql);
 
          return ($stmt->execute($params));
+      }
+
+      public function updateEntry(array $data){
+
+         $params = [];
+         $preQuery = [];
+
+         foreach($data AS $field => $value){
+            $params[":$field"] = $value;
+            if($field == 'id') continue;
+            $preQuery[] = "`$field` = :$field";
+         }
+
+         $preQuery = implode(',', $preQuery);
+         $query = "UPDATE `entries` SET $preQuery WHERE `id` = :id";
+         
+         $stmt = $this->pdo->prepare($query);
+         
+         return $stmt->execute($params);
+
       }
    }
 ?>
