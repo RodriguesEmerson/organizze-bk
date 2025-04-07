@@ -82,7 +82,7 @@
          try{
             foreach($data AS $field => $value){
                match(true){
-                  in_array($field, ['date', 'end_date', 'last_edition']) => $data[$field] = Utils::formatDateToYmd($value),
+                  // in_array($field, ['date', 'end_date', 'last_edition']) => $data[$field] = Utils::formatDateToYmd($value),
                   $field === 'value' => $data[$field] = Utils::formatToNumericNumber($value),
                   default => $data[$field] = trim($value),
                };
@@ -102,7 +102,7 @@
             exit;
          }
 
-         echo json_encode($data);
+         echo json_encode(['message' => $data]);
       }
    }
 ?>

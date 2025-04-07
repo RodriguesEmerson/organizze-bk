@@ -16,12 +16,15 @@
             exit;
          break;
          case 'POST':
-            $data['fixed'] == 'on' ? $data['fixed'] = true : $data['fixed'] = false; 
-            $entriesController->insertEntry($data['id'], $userId, $data['desc'], $data['categ'], $data['date'], $data['fixed'], $data['endDate'], $data['icon'], $data['value']);
+            $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
+            $entriesController->insertEntry($data['id'], $userId, $data['description'], $data['category'], $data['date'], $data['fixed'], $data['end_date'], $data['icon'], $data['value']);
             exit;
          break;  
          case 'UPDATE':
-            $data['fixed'] == 'on' ? $data['fixed'] = true : $data['fixed'] = false; 
+            if(isset($data['fixed'])){
+               $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
+            }
+            // echo json_encode($data);exit;
             $entriesController->updateEntry($data, $userId);
             exit;
          break;

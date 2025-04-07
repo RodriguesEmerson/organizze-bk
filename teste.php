@@ -31,11 +31,11 @@
 </head>
 <body>
    <form action="" id="formId" style="margin-bottom: 20px;">
-      <input type="text" name="desc" value="Teste-1">
-      <input type="text" name="categ" value="Category-1">
+      <input type="text" name="description" value="Teste-1">
+      <input type="text" name="category" value="Category-1">
       <input type="text" name="date" value="30/03/2025">
       <input type="checkbox" name="fixed" checked>
-      <input type="text" name="endDate" value="30/04/2025">
+      <input type="text" name="end_date" value="30/04/2025">
       <input type="text" name="value" value="100,50">
       <input type="submit" value="Save">
    </form>
@@ -56,11 +56,11 @@
    </div>
 
    <form action="" id="editId" style="margin-top: 20px;">
-      <input type="text" name="desc">
-      <input type="text" name="categ">
+      <input type="text" name="description">
+      <input type="text" name="category">
       <input type="text" name="date">
       <input type="checkbox" name="fixed">
-      <input type="text" name="endDate">
+      <input type="text" name="end_date">
       <input type="text" name="value">
       <input type="submit" value="Update">
    </form>
@@ -74,6 +74,7 @@
       const editForm = document.querySelector('#editId');
       const signoutButton = document.querySelector('#signoutButton');
       const TABLE = document.querySelector('#table');
+      let entryEditing = false;
       
       //Load entry data into Table ====================================================================================================
       //===============================================================================================================================
@@ -89,9 +90,9 @@
             const tr = createElementDOM('tr', {id: entry.id});
             const tdDesc = createElementDOM('td', false, entry.description);
             const tdCateg = createElementDOM('td', false, entry.category);
-            const tdDate = createElementDOM('td', false, new Date(entry.date).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:"numeric"}))
+            const tdDate = createElementDOM('td', false, formatToDMYDate(entry.date))
             const tdFixed = createElementDOM('td', false, entry.fixed == 1 ? 'Sim' : 'Não');
-            const tdEndDate = createElementDOM('td', false,  new Date(entry.end_date).toLocaleDateString('pt-BR', {day:'2-digit', month:'2-digit', year:"numeric"}));
+            const tdEndDate = createElementDOM('td', false, entry.end_date ? formatToDMYDate(entry.end_date) : '');
             const tdValue = createElementDOM('td', false, new Intl.NumberFormat('pt-BR', {style: 'currency', currency: 'BRL'}).format(entry.value));
 
             tr.appendChild(tdDesc);
@@ -104,6 +105,7 @@
             tbody.appendChild(tr);
 
             tr.addEventListener('click', () =>{
+               entryEditing = entry;
                for(let ind = 0; ind <= tr.childNodes.length; ind++){
                   if(editForm.children[ind].getAttribute('type') == 'checkbox'){
                      if(tr.childNodes[ind].textContent == 'Sim')  {
@@ -117,6 +119,11 @@
             })
          })
       })();
+
+      function formatToDMYDate(date){
+         dateSplited = date.split('-');
+         return `${dateSplited[2]}/${dateSplited[1]}/${dateSplited[0]}`
+      }
 
       function createElementDOM(type, attributes, value){
          const element = document.createElement(type);
@@ -157,16 +164,43 @@
       //====================================================================================================================================
       editForm.addEventListener('submit', (e) => {
          e.preventDefault();
-         const formData = new FormData(form);
+         const formData = new FormData(editForm);
          const data = Object.fromEntries(formData.entries());
-         data.id = gerarCUID();
-         data.icon = 'images/icon.png'
-         uptdateEntry(data);
+
+         //Criando função para pegar apenas dados alterados
+         const alteredData = {};
+         if(entryEditing && data){
+
+            data.date = formatToYdmDate(data.date);
+            data.fixed == 'on' ? data.fixed = 1 : data.fixed = 0;
+            data.value = data.value.replace('.','');
+            data.value = data.value.replace(',','.');
+            data.value = data.value.slice(2);
+            if(data.fixed == 1){
+               data.end_date = formatToYdmDate(data.end_date);
+            }
+
+            for (let key in data){
+               if(data[key] != entryEditing[key]){
+                  alteredData[key] = data[key];
+               }
+            }
+         }
+         
+         if(Object.entries(alteredData).length > 0){
+            alteredData.id = entryEditing.id;
+            uptdateEntry(alteredData);
+         }
       })
+
+      function formatToYdmDate(date){
+         dateSplited = date.split('/');
+         return `${dateSplited[2]}-${dateSplited[1]}-${dateSplited[0]}`
+      }
 
       async function uptdateEntry(data){
          const resquest = await fetch('http://localhost/organizze-bk/public/entries.php', {
-            method: 'POST',
+            method: 'UPDATE',
             headers: {'Content-Type': 'applicaton/json'},
             body: JSON.stringify(data)
          });
