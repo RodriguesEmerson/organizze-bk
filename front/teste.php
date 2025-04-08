@@ -45,9 +45,12 @@ if ($token) {
 
       </aside>
       <section>
-         <div id="black-background-form">
+         <div id="black-background-form" class="hidden">
             <div class="form-box">
                <h3>Add new Entry</h3>
+               <div class="close-button">
+                  <span>x</span>
+               </div>
                <form action="" id="formId" style="margin-bottom: 20px;">
 
                   <div class="row">
@@ -114,7 +117,63 @@ if ($token) {
             </table>
          </div>
 
-         <form action="" id="editId" style="margin-top: 20px;">
+         <div id="black-background-formEdit" class="hidden">
+            <div class="form-box">
+               <h3>Editing Entry</h3>
+               <div class="close-button">
+                  <span>x</span>
+               </div>
+               <form action="" id="editId" style="margin-bottom: 20px;">
+                  <div class="row">
+                     <div class="field">
+                        <label for="selectIdEdit">Type</label>
+                        <select name="type" id="selectIdEdit">
+                           <option value="selecione">*Selecione*</option>
+                           <option value="income" >income</option>
+                           <option value="expense">expese</option>
+                        </select>
+                     </div>
+                     <div class="field">
+                        <label for="categIdEdit">Category</label>
+                        <input type="text" name="category" id='categIdEdit'>
+                     </div>
+                  </div>
+
+                  <div class="row">
+                     <div class="field">
+                        <label for="descIdEdit">Description</label>
+                        <input type="text" name="description" id="descIdEdit">
+                     </div>
+                  </div>
+                  
+                  <div class="row">
+                     <div class="field">
+                        <label for="dateIdEdit">Date</label>
+                        <input type="text" name="date" id="dateIdEdit">
+                     </div>
+                     <div class="field">
+                        <label for="fixedIdEdit">Fixed</label>
+                        <input type="checkbox" name="fixed" id="fixedIdEdit">
+                     </div>
+                     <div class="field">
+                        <label for="endDateIdEdit">End date</label>
+                        <input type="text" name="end_date" id="endDateIdEdit">
+                     </div>
+                  </div>
+
+                  <div class="row">
+                     <div class="field">
+                        <label for="valueIdEdit">Amount</label>
+                        <input type="text" name="value" id="valueIdEdit">
+                     </div>
+                  </div>
+
+                  <input type="submit" value="Save">
+               </form>
+            </div>
+         </div>
+
+         <!-- <form action="" id="editId" style="margin-top: 20px;">
             <select name="type">
                <option value="selecione">*Selecione*</option>
                <option value="income">income</option>
@@ -127,7 +186,7 @@ if ($token) {
             <input type="text" name="end_date">
             <input type="text" name="value">
             <input type="submit" value="Update">
-         </form>
+         </form> -->
 
          <div>
             <input type="button" value="Signout" style="margin-top: 10px; cursor: pointer;" id="signoutButton">
@@ -141,7 +200,14 @@ if ($token) {
       const editForm = document.querySelector('#editId');
       const signoutButton = document.querySelector('#signoutButton');
       const TABLE = document.querySelector('#table');
+      const buttonCloseForm = document.querySelector('.close-button');
+      const backForm = document.querySelector('#black-background-form');
+      const backFormEdit = document.querySelector('#black-background-formEdit');
       let entryEditing = false;
+
+      buttonCloseForm.addEventListener('click', () => {
+         backForm.classList.add('hidden');
+      });
 
       //Load entry data into Table ====================================================================================================
       //===============================================================================================================================
@@ -179,21 +245,25 @@ if ($token) {
 
             tr.addEventListener('click', () => {
                entryEditing = entry;
-               for (let ind = 0; ind <= tr.childNodes.length + 1; ind++) {
-                  try{
-                     if (editForm.children[ind].getAttribute('type') == 'checkbox') {
-                        if (tr.childNodes[ind].textContent == 'Sim') {
-                           editForm.children[ind].setAttribute('checked', '')
-                        }
-                     }
-                     if (editForm.children[ind].getAttribute('type') == 'text') {
-                        editForm.children[ind].value = tr.childNodes[ind].textContent;
-                     }
-                     if (editForm.children[ind].getAttribute('name') == 'type') {
-                        editForm.children[ind].value = tr.childNodes[ind].textContent == 'trending_up' ? 'income': 'expense';
-                     }
-                  }catch(error){}
+               backFormEdit.classList.remove('hidden')
+
+               document.querySelector('#selectIdEdit').value = entry.type;
+               document.querySelector('#categIdEdit').value = entry.category;
+               document.querySelector('#descIdEdit').value = entry.description;
+               document.querySelector('#dateIdEdit').value = formatToDMYDate(entry.date);
+               if(entry.fixed){
+                  document.querySelector('#fixedIdEdit').setAttribute('checked', '')
+               }else{
+                  document.querySelector('#fixedIdEdit').removeAttribute('checked')
                }
+               document.querySelector('#endDateIdEdit').value = formatToDMYDate(entry.end_date);
+               document.querySelector('#valueIdEdit').value =  new Intl.NumberFormat('pt-BR', {
+                  style: 'currency',
+                  currency: 'BRL'
+               }).format(entry.value);
+              
+
+               console.log(document.querySelector('#valueIdEdit'))
             })
          })
       })();
