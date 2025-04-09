@@ -9,7 +9,6 @@
       }
 
       public function getUserByEmail(string $email):array{
-         // echo json_encode($email);exit;
          $stmt = $this->pdo->prepare('SELECT * FROM `users` WHERE `email` = :email');
          $stmt->bindValue(':email', $email);
          $stmt->execute();

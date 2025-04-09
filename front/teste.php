@@ -30,7 +30,7 @@ if ($token) {
    <meta charset="UTF-8">
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    <title>Document</title>
-   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=trending_up" />
+   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
    <link rel="stylesheet" href="./css/global.css">
    <link rel="stylesheet" href="./css/header.css">
    <link rel="stylesheet" href="./css/teste.css">
@@ -42,17 +42,24 @@ if ($token) {
    ?>
    <main>
       <aside>
-
+         <div id="signoutButton" class="signoutButton-box">
+            <p>SignOut</p>
+            <span class="material-symbols-outlined" id="signoutButton">logout</span>
+         </div>
       </aside>
       <section>
+         <div id="openForm">
+            <span>Add new Entry</span>
+         </div>
          <div id="black-background-form" class="hidden">
-            <div class="form-box">
+            <div class="form-box modal">
+
                <h3>Add new Entry</h3>
                <div class="close-button">
                   <span>x</span>
                </div>
-               <form action="" id="formId" style="margin-bottom: 20px;">
 
+               <form action="" id="formId" style="margin-bottom: 20px;">
                   <div class="row">
                      <div class="field">
                         <label for="selectId">Type</label>
@@ -118,9 +125,9 @@ if ($token) {
          </div>
 
          <div id="black-background-formEdit" class="hidden">
-            <div class="form-box">
+            <div class="form-box modal">
                <h3>Editing Entry</h3>
-               <div class="close-button">
+               <div class="close-button close-button-edit">
                   <span>x</span>
                </div>
                <form action="" id="editId" style="margin-bottom: 20px;">
@@ -172,25 +179,6 @@ if ($token) {
                </form>
             </div>
          </div>
-
-         <!-- <form action="" id="editId" style="margin-top: 20px;">
-            <select name="type">
-               <option value="selecione">*Selecione*</option>
-               <option value="income">income</option>
-               <option value="expense">expese</option>
-            </select>
-            <input type="text" name="description">
-            <input type="text" name="category">
-            <input type="text" name="date">
-            <input type="checkbox" name="fixed">
-            <input type="text" name="end_date">
-            <input type="text" name="value">
-            <input type="submit" value="Update">
-         </form> -->
-
-         <div>
-            <input type="button" value="Signout" style="margin-top: 10px; cursor: pointer;" id="signoutButton">
-         </div>
       </section>
    </main>
 
@@ -201,12 +189,20 @@ if ($token) {
       const signoutButton = document.querySelector('#signoutButton');
       const TABLE = document.querySelector('#table');
       const buttonCloseForm = document.querySelector('.close-button');
+      const buttonOpenForm = document.querySelector('#openForm');
+      const buttonCloseFormEdit = document.querySelector('.close-button-edit');
       const backForm = document.querySelector('#black-background-form');
       const backFormEdit = document.querySelector('#black-background-formEdit');
       let entryEditing = false;
 
       buttonCloseForm.addEventListener('click', () => {
          backForm.classList.add('hidden');
+      });
+      buttonOpenForm.addEventListener('click', () => {
+         backForm.classList.remove('hidden');
+      })
+      buttonCloseFormEdit.addEventListener('click', () => {
+         backFormEdit.classList.add('hidden');
       });
 
       //Load entry data into Table ====================================================================================================
@@ -261,9 +257,6 @@ if ($token) {
                   style: 'currency',
                   currency: 'BRL'
                }).format(entry.value);
-              
-
-               console.log(document.querySelector('#valueIdEdit'))
             })
          })
       })();
@@ -317,7 +310,6 @@ if ($token) {
          const formData = new FormData(editForm);
          const data = Object.fromEntries(formData.entries());
 
-         //Criando função para pegar apenas dados alterados
          const alteredData = {};
          if (entryEditing && data) {
             data.date = formatToYdmDate(data.date);
@@ -325,6 +317,7 @@ if ($token) {
             data.value = data.value.replace('.', '');
             data.value = data.value.replace(',', '.');
             data.value = data.value.slice(3);
+
             if (data.fixed == 1) {
                data.end_date = formatToYdmDate(data.end_date);
             }
@@ -357,7 +350,10 @@ if ($token) {
          });
 
          const result = await resquest.json();
-         console.log(result);
+         if(result.code == '200'){
+            backFormEdit.classList.add('hidden');
+
+         }
       }
 
       //SIGNOUT ============================================================================================================================

@@ -18,7 +18,6 @@
          die();
       }
    }
-
    
 ?><!DOCTYPE html>
 <html lang="pt">

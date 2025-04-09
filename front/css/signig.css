@@ -4,6 +4,7 @@ main{
    align-items: center;
    justify-content: center;
    height: calc(100vh - 60px);
+   font-family: Arial, Helvetica, sans-serif;
 }
 #form-box{
    background-color: white;

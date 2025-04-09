@@ -103,7 +103,6 @@
             exit;
          }
 
-
          try{
             $this->entriesModel->updateEntry($data);
             http_response_code(200);

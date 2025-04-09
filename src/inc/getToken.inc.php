@@ -1,5 +1,4 @@
 <?php
- 
    $headers = apache_request_headers();
    $headerToken = $headers['Authorization'] ?? null;
    

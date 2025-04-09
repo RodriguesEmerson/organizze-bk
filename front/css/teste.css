@@ -11,12 +11,36 @@ main{
 }
 
 aside{
+   position: relative;
    background-color: white;
+   overflow: hidden;
    height: calc(100% - 20px);
    width: 250px;
    border-radius: 10px;
    padding: 10px;
    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.073);
+
+   & .signoutButton-box{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      text-align: center;
+      width: 100%;
+      font-size: 14px;
+      color: darkred;
+      cursor: pointer;
+      transition: 0.4s;
+      padding: 5px 0;
+
+      &:hover{
+         background-color: rgba(255, 0, 0, 0.153);
+      }
+   }
 }
 section{
    background-color: white;
@@ -38,6 +62,24 @@ section{
    height: 100vh;
    width: 100vw;
    background-color: rgba(0, 0, 0, 0.556);
+}
+
+#openForm{
+   width: 130px;
+   height: 30px;
+   background-color: cadetblue;
+   border-radius: 5px;
+   text-align: center;
+   line-height: 30px;
+   color: white;
+   font-family: Arial, Helvetica, sans-serif;
+   cursor: pointer;
+   transition: 0.4s;
+   margin-bottom: 10px;
+
+   &:hover{
+      background-color: rgb(65, 115, 117);
+   }
 }
 
 .form-box{

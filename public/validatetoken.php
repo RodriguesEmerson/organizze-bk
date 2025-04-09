@@ -3,7 +3,6 @@
    require_once __DIR__ . '/../src/Auth/JWT/JWT.php';
    require_once __DIR__ . '/../src/inc/getToken.inc.php';
    
-   // echo json_encode($token);exit;
    if($request == 'validatetoken.php' && $method == 'POST'){
       if($token && JWTHandler::validateToken($token)){
          http_response_code(200);
