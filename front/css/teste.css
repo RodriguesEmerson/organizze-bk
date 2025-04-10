@@ -20,6 +20,29 @@ aside{
    padding: 10px;
    box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.073);
 
+   & #userInfo{
+      position: absolute;
+      bottom: 40px;
+   }
+
+   & #user-img{
+      height: 60px;
+      width: 60px;
+      background-color: cadetblue;
+      border-radius: 100%;
+      margin: 0px auto 5px auto;
+   }
+
+   & #user-name{
+      /* color: gray; */
+      font-size: 15px;
+   }
+   & #user-email{
+      color: gray;
+      font-size: 15px;
+   }
+
+
    & .signoutButton-box{
       display: flex;
       flex-direction: row;
@@ -89,6 +112,10 @@ section{
    padding: 10px;
    border-radius: 5px;
    font-family: Arial;
+
+   input:disabled{
+      background-color: lightgray;
+   }
 
    & h3{
       color: rgb(0, 141, 136);

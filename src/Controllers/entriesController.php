@@ -24,13 +24,17 @@
          }
       }
 
-      public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $date, bool $fixed,
-      string $end_date, string $icon, string $value):void{
+      public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $type, string $date, bool $fixed,
+      string|null $end_date, string $icon, string $value):void{
+
+         // json_encode($end_date);exit;
+
          $data = [
             'id' => $id,
             'foreing_key' => trim($foreing_key),
             'description' => trim($description),
             'category' => trim($category),
+            'type' => trim($type),
             'date' => trim($date),
             'fixed' => $fixed,
             'end_date' => trim($end_date),
@@ -38,6 +42,8 @@
             'icon' => trim($icon),
             'value' => $value,
          ];
+
+
          //Validating data
          try{
             foreach($data AS $field => $value){

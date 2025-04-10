@@ -42,6 +42,16 @@ if ($token) {
    ?>
    <main>
       <aside>
+         <div id="userInfo">
+            <div id="user-img">
+
+            </div>
+            <div>
+               <span id="user-name">Emerson</span>
+               <span id="user-email">emersonemail@teste.com</span>
+            </div>
+         </div>
+
          <div id="signoutButton" class="signoutButton-box">
             <p>SignOut</p>
             <span class="material-symbols-outlined" id="signoutButton">logout</span>
@@ -88,11 +98,11 @@ if ($token) {
                      </div>
                      <div class="field">
                         <label for="fixedId">Fixed</label>
-                        <input type="checkbox" name="fixed" checked id="fixedId">
+                        <input type="checkbox" name="fixed" id="fixedId">
                      </div>
                      <div class="field">
                         <label for="endDateId">End date</label>
-                        <input type="text" name="end_date" value="30/04/2025" id="endDateId">
+                        <input type="text" name="end_date" value="30/04/2025" id="endDateId" disabled>
                      </div>
                   </div>
 
@@ -164,7 +174,7 @@ if ($token) {
                      </div>
                      <div class="field">
                         <label for="endDateIdEdit">End date</label>
-                        <input type="text" name="end_date" id="endDateIdEdit">
+                        <input type="text" name="end_date" id="endDateIdEdit" disabled>
                      </div>
                   </div>
 
@@ -194,12 +204,21 @@ if ($token) {
       const backForm = document.querySelector('#black-background-form');
       const backFormEdit = document.querySelector('#black-background-formEdit');
       let entryEditing = false;
-
+      
       buttonCloseForm.addEventListener('click', () => {
          backForm.classList.add('hidden');
       });
       buttonOpenForm.addEventListener('click', () => {
          backForm.classList.remove('hidden');
+
+         const buttonEndDate = document.querySelector('#fixedId');
+         buttonEndDate.addEventListener('click', () => {
+            const endDateId = document.querySelector('#endDateId');
+            endDateId.toggleAttribute('disabled');
+            if(endDateId.hasAttribute('disabled')){
+               endDateId.value = '';
+            }
+         })
       })
       buttonCloseFormEdit.addEventListener('click', () => {
          backFormEdit.classList.add('hidden');
@@ -252,11 +271,24 @@ if ($token) {
                }else{
                   document.querySelector('#fixedIdEdit').removeAttribute('checked')
                }
-               document.querySelector('#endDateIdEdit').value = formatToDMYDate(entry.end_date);
+               if(entry.end_date){
+                  const endDateId = document.querySelector('#endDateIdEdit');
+                  endDateId.removeAttribute('disabled')
+                  document.querySelector('#endDateIdEdit').value = formatToDMYDate(entry.end_date);
+               }
                document.querySelector('#valueIdEdit').value =  new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
                }).format(entry.value);
+
+               const buttonEndDateEdit = document.querySelector('#fixedIdEdit');
+               buttonEndDateEdit.addEventListener('click', () => {
+               const endDateIdEdit = document.querySelector('#endDateIdEdit');
+               endDateIdEdit.toggleAttribute('disabled');
+               if(endDateIdEdit.hasAttribute('disabled')){
+                  endDateIdEdit.value = '';
+               }
+         })
             })
          })
       })();
@@ -285,6 +317,14 @@ if ($token) {
          e.preventDefault();
          const formData = new FormData(form);
          const data = Object.fromEntries(formData.entries());
+         data.date = formatToYdmDate(data.date);
+         console.log(data);
+         if (data.fixed) {
+            data.end_date = formatToYdmDate(data.end_date);
+         }else{
+            data.fixed = 0;
+            data.end_date = null;
+         }
          data.id = gerarCUID();
          data.icon = 'images/icon.png'
          saveEntry(data);
