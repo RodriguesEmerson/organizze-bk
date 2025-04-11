@@ -29,8 +29,8 @@
       }
 
       public static function validateBool($bool):bool{
-         if(!is_bool($bool) || $bool == null){
-            throw new InvalidArgumentException('Invalid boolean value. 400');
+         if(!is_bool($bool) || $bool === null){
+            throw new InvalidArgumentException('Invalid boolean value.', 400);
          }
          return true;
       }

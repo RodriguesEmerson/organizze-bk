@@ -318,7 +318,7 @@ if ($token) {
          const formData = new FormData(form);
          const data = Object.fromEntries(formData.entries());
          data.date = formatToYdmDate(data.date);
-         console.log(data);
+         
          if (data.fixed) {
             data.end_date = formatToYdmDate(data.end_date);
          }else{

@@ -24,11 +24,9 @@
          }
       }
 
-      public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $type, string $date, bool $fixed,
-      string|null $end_date, string $icon, string $value):void{
+      public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $type, string $date, bool $fixed, string|null $end_date, string $icon, string $value):void{
 
-         // json_encode($end_date);exit;
-
+         
          $data = [
             'id' => $id,
             'foreing_key' => trim($foreing_key),
@@ -37,12 +35,11 @@
             'type' => trim($type),
             'date' => trim($date),
             'fixed' => $fixed,
-            'end_date' => trim($end_date),
+            'end_date' => $end_date,
             'last_edition' => Utils::getDateWithTimezone('America/Sao_Paulo'),
             'icon' => trim($icon),
             'value' => $value,
          ];
-
 
          //Validating data
          try{
@@ -52,13 +49,10 @@
             }
             
             Validators::validateBool($data['fixed']);
-            
-            $data['date'] = Utils::formatDateToYmd($data['date']);
             Validators::validateDateYMD($data['date']);
             
-            
             if($data['fixed']){
-               $data['end_date'] = Utils::formatDateToYmd($data['end_date']);
+               $data['end_date'] = trim($data['end_date']);
                Validators::validateDateYMD($data['end_date']);
             }
             

@@ -17,8 +17,8 @@
             break;
             case 'POST':
                //Adicionar novo campo "Type"
-               echo json_encode($data);exit;
                $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
+               // echo json_encode($data);exit;
                $entriesController->insertEntry($data['id'], $userId, $data['description'], $data['category'], $data['type'], $data['date'], $data['fixed'], $data['end_date'], $data['icon'], $data['value']);
 
                exit;
