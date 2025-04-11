@@ -34,8 +34,8 @@ aside{
    }
 
    & #user-name{
-      /* color: gray; */
       font-size: 15px;
+      text-align: center;
    }
    & #user-email{
       color: gray;
@@ -59,9 +59,10 @@ aside{
       cursor: pointer;
       transition: 0.4s;
       padding: 5px 0;
-
+      background-color: rgba(255, 0, 0, 0.153);
+      
       &:hover{
-         background-color: rgba(255, 0, 0, 0.153);
+         background-color: rgba(139, 0, 0, 0.363);
       }
    }
 }

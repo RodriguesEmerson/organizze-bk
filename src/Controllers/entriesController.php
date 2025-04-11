@@ -88,6 +88,9 @@
                   default => $data[$field] = trim($value),
                };
             }
+            if($data['fixed']){
+               $data['fixed'] == '1' ? $data['fixed'] = true : $data['fixed'] = false; 
+            }
 
             foreach($data AS $field => $value){
                match(true){

@@ -47,8 +47,8 @@ if ($token) {
 
             </div>
             <div>
-               <span id="user-name">Emerson</span>
-               <span id="user-email">emersonemail@teste.com</span>
+               <p id="user-name">Emerson</p>
+               <p id="user-email">emersonemail@teste.com</p>
             </div>
          </div>
 
@@ -74,27 +74,28 @@ if ($token) {
                      <div class="field">
                         <label for="selectId">Type</label>
                         <select name="type" id="selectId">
+                           <option value="selecione">*Selecione*</option>
                            <option value="income" >income</option>
-                           <option value="expense">expese</option>
+                           <option value="expense">expense</option>
                         </select>
                      </div>
                      <div class="field">
                         <label for="categId">Category</label>
-                        <input type="text" name="category" value="Category-1" id='categId'>
+                        <input type="text" name="category" id='categId' require maxlength="30">
                      </div>
                   </div>
 
                   <div class="row">
                      <div class="field">
                         <label for="descId">Description</label>
-                        <input type="text" name="description" value="Teste-1" id="descId">
+                        <input type="text" name="description" require maxlength="255" id="descId">
                      </div>
                   </div>
                   
                   <div class="row">
                      <div class="field">
                         <label for="dateId">Date</label>
-                        <input type="text" name="date" value="30/03/2025" id="dateId">
+                        <input type="text" name="date" require maxlength="10" placeholder="dd/mm/aaaa" id="dateId">
                      </div>
                      <div class="field">
                         <label for="fixedId">Fixed</label>
@@ -102,14 +103,14 @@ if ($token) {
                      </div>
                      <div class="field">
                         <label for="endDateId">End date</label>
-                        <input type="text" name="end_date" value="30/04/2025" id="endDateId" disabled>
+                        <input type="text" name="end_date" maxlength="10" placeholder="dd/mm/aaaa" id="endDateId" disabled>
                      </div>
                   </div>
 
                   <div class="row">
                      <div class="field">
                         <label id="valueId">Amount</label>
-                        <input type="text" name="value" value="100,50" id="valueId">
+                        <input type="text" name="value" require  id="valueId">
                      </div>
                   </div>
 
@@ -147,7 +148,7 @@ if ($token) {
                         <select name="type" id="selectIdEdit">
                            <option value="selecione">*Selecione*</option>
                            <option value="income" >income</option>
-                           <option value="expense">expese</option>
+                           <option value="expense">expense</option>
                         </select>
                      </div>
                      <div class="field">
@@ -170,7 +171,7 @@ if ($token) {
                      </div>
                      <div class="field">
                         <label for="fixedIdEdit">Fixed</label>
-                        <input type="checkbox" name="fixed" id="fixedIdEdit">
+                        <input type="checkbox" name="fixed" id="fixedIdEdit" >
                      </div>
                      <div class="field">
                         <label for="endDateIdEdit">End date</label>
@@ -221,6 +222,7 @@ if ($token) {
          })
       })
       buttonCloseFormEdit.addEventListener('click', () => {
+         editForm.reset();
          backFormEdit.classList.add('hidden');
       });
 
@@ -236,7 +238,7 @@ if ($token) {
          TABLE.appendChild(tbody);
          data.forEach(entry => {
             const tr = createElementDOM('tr', {id: entry.id, class: entry.type});
-            tdType = createElementDOM('td', {class: 'material-symbols-outlined'}, entry.type == 'income' ? 'trending_up': 'trending_down')
+            tdType = createElementDOM('td', {class: 'material-symbols-outlined'}, entry.type == 'income' ? 'arrow_upward_alt': 'arrow_downward_alt')
             const tdDesc = createElementDOM('td', false, entry.description);
             const tdCateg = createElementDOM('td', false, entry.category);
             const tdDate = createElementDOM('td', false, formatToDMYDate(entry.date))
@@ -266,16 +268,18 @@ if ($token) {
                document.querySelector('#categIdEdit').value = entry.category;
                document.querySelector('#descIdEdit').value = entry.description;
                document.querySelector('#dateIdEdit').value = formatToDMYDate(entry.date);
+
+               const endDateId = document.querySelector('#endDateIdEdit');
                if(entry.fixed){
-                  document.querySelector('#fixedIdEdit').setAttribute('checked', '')
-               }else{
-                  document.querySelector('#fixedIdEdit').removeAttribute('checked')
-               }
-               if(entry.end_date){
-                  const endDateId = document.querySelector('#endDateIdEdit');
-                  endDateId.removeAttribute('disabled')
+                  document.querySelector('#fixedIdEdit').setAttribute('checked', '');
+                  endDateId.removeAttribute('disabled');
                   document.querySelector('#endDateIdEdit').value = formatToDMYDate(entry.end_date);
+               }else{
+                  document.querySelector('#fixedIdEdit').removeAttribute('checked');
+                  document.querySelector('#endDateIdEdit').value = '';
+                  endDateId.setAttribute('disabled', '');
                }
+
                document.querySelector('#valueIdEdit').value =  new Intl.NumberFormat('pt-BR', {
                   style: 'currency',
                   currency: 'BRL'
@@ -283,12 +287,18 @@ if ($token) {
 
                const buttonEndDateEdit = document.querySelector('#fixedIdEdit');
                buttonEndDateEdit.addEventListener('click', () => {
-               const endDateIdEdit = document.querySelector('#endDateIdEdit');
-               endDateIdEdit.toggleAttribute('disabled');
-               if(endDateIdEdit.hasAttribute('disabled')){
-                  endDateIdEdit.value = '';
-               }
-         })
+                  const endDateIdEdit = document.querySelector('#endDateIdEdit');
+                  buttonEndDateEdit.toggleAttribute('checked');
+                  if(endDateIdEdit.hasAttribute('disabled')){
+                     endDateIdEdit.removeAttribute('disabled');
+                     endDateIdEdit.setAttribute('require','');
+                     
+                  }else{
+                     endDateIdEdit.value = '';
+                     endDateIdEdit.removeAttribute('require');
+                     endDateIdEdit.setAttribute('disabled','');
+                  }
+               })
             })
          })
       })();
@@ -390,9 +400,10 @@ if ($token) {
          });
 
          const result = await resquest.json();
+         console.log(result);
          if(result.code == '200'){
+            editForm.reset();
             backFormEdit.classList.add('hidden');
-
          }
       }
 
