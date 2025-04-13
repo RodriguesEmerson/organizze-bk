@@ -1,5 +1,5 @@
 <?php 
-   require __DIR__ . '/../src/Helpers/headerTop.config.inc.php';
+   require_once __DIR__ . '/../src/inc/headerTop.config.inc.php';
    require_once __DIR__ . '/../src/Auth/JWT/JWT.php';
    require_once __DIR__ . '/../src/inc/getToken.inc.php';
    

@@ -1,7 +1,5 @@
 <?php
 
-use Firebase\JWT\JWT;
-
    require_once __DIR__ . '/../Models/user.php';
    require_once __DIR__ . '/../Helpers/utils.php';
    require_once __DIR__ . '/JWT/JWT.php';
@@ -26,12 +24,12 @@ use Firebase\JWT\JWT;
                   'secure' => true,            //Only HTTPS
                   'samesite' => 'Strict'       //Avoid other sites accsses
                ]);
-               
+
                http_response_code(200);
                echo json_encode([
                   'success' => true,
                   'message' => 'Successful login',
-                  'redirect' => 'http://localhost/organizze-bk/front/teste.php'
+                  'redirect' => 'http://localhost:3000/dashboard'
                ]);
                exit;
             }
