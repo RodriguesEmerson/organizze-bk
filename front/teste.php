@@ -207,6 +207,7 @@ if ($token) {
       let entryEditing = false;
       
       buttonCloseForm.addEventListener('click', () => {
+         form.reset();
          backForm.classList.add('hidden');
       });
       buttonOpenForm.addEventListener('click', () => {
@@ -341,16 +342,22 @@ if ($token) {
       });
 
       async function saveEntry(data) {
-         const resquest = await fetch('http://localhost/organizze-bk/public/entries.php', {
+         await fetch('http://localhost/organizze-bk/public/entries.php', {
             method: 'POST',
             headers: {
                'Content-Type': 'applicaton/json'
             },
             body: JSON.stringify(data)
+         })
+         .then(async response => {
+            if(response.status == 201){
+               form.reset();
+               backForm.classList.add('hidden');
+            }
+         })
+         .catch(error => {
+            console.log(error)
          });
-
-         const result = await resquest.json();
-         console.log(result);
       }
 
       //EDIT SUBMIT EVENT ==================================================================================================================
