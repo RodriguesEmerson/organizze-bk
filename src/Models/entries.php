@@ -22,6 +22,14 @@
          return  $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
+      public function getAvailablesTalbes($userId):array|bool{
+         $stmt = $this->pdo->prepare('SELECT DATE_FORMAT(`date`, "%Y-%m") AS `y_m` FROM `entries` WHERE `foreing_key` = :userId GROUP BY `y_m`');
+         $stmt->bindValue(':userId', $userId);  
+         $stmt->execute();
+
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+
       public function insertEntry(array $data):bool{
 
          $keys = [];
@@ -45,7 +53,6 @@
       }
 
       public function updateEntry(array $data){
-
          $params = [];
          $preQuery = [];
 

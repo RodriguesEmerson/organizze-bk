@@ -11,7 +11,6 @@
       }
 
       public function getEntries($userId):void{
-         
          try{
             $result = $this->entriesModel->getEntries($userId);
             http_response_code(200);
@@ -24,9 +23,21 @@
          }
       }
 
+      public function getAvailablesTalbes(string $foreing_key){
+         try{
+            $result = $this->entriesModel->getAvailablesTalbes($foreing_key);
+            http_response_code(200);
+            echo json_encode($result);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error.']);
+            exit;
+         }
+      }
+
       public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $type, string $date, bool $fixed, string|null $end_date, string $icon, string $value):void{
 
-         
          $data = [
             'id' => $id,
             'foreing_key' => trim($foreing_key),
@@ -58,8 +69,7 @@
             
             $data['value'] = Utils::formatToNumericNumber($data['value']);
             Validators::validateFloat($data['value']);
-            
-            
+
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
             echo json_encode(['message' => $e->getMessage()]);

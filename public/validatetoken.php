@@ -10,6 +10,6 @@
          exit;
       }
       http_response_code(401);
-      echo json_encode(['message' => 'Invalid token']);
+      echo json_encode(['message' => 'Invalid token.']);
    }
 ?>
