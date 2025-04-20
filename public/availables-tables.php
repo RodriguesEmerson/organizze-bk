@@ -7,6 +7,7 @@
       $entriesController = new EntriesController();
       $userId = JWTHandler::getUserId($token);
 
+
       $entriesController->getAvailablesTalbes($userId);
    }
 ?>

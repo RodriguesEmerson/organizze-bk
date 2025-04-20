@@ -10,11 +10,12 @@
          $this->entriesModel = new EntriesModel();
       }
 
-      public function getEntries($userId):void{
+      public function getEntries($userId, $year, $month):void{
          try{
-            $result = $this->entriesModel->getEntries($userId);
+            $entrieResult = $this->entriesModel->getEntries($userId, $year, $month);
+            $entiresSum = $this->entriesModel->getEntriesSum($userId, $year, $month);
             http_response_code(200);
-            echo json_encode($result);
+            echo json_encode(['entries' => $entrieResult, 'sum' => $entiresSum]);
             exit;
          }catch(Exception $e){
             http_response_code(500);

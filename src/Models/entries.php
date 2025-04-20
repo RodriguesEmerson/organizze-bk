@@ -1,4 +1,7 @@
-<?php 
+<?php
+
+use LDAP\Result;
+
    require_once __DIR__ . '/../../config/database.php';
 
    class EntriesModel{
@@ -8,30 +11,47 @@
          $this->pdo = Database::getConnection();
       }
 
-      public function getEntries(string $userId):array|bool{
+      public function getEntries(string $userId, string $year, string $month):array|bool{
+         $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
             'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
              FROM `entries` 
-             WHERE `foreing_key` = :userID 
+             WHERE `foreing_key` = :userID AND `date` LIKE :period
              ORDER BY `date` 
              DESC 
              LIMIT 10'
          );
          $stmt->bindValue(':userID', $userId);
+         $stmt->bindValue(':period', $period);
          $stmt->execute();
          return  $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
-      public function getAvailablesTalbes($userId):array|bool{
-         $stmt = $this->pdo->prepare('SELECT DATE_FORMAT(`date`, "%Y-%m") AS `y_m` FROM `entries` WHERE `foreing_key` = :userId GROUP BY `y_m`');
-         $stmt->bindValue(':userId', $userId);  
+      public function getEntriesSum(string $userId, string $year, string $month){
+         $period = "%$year-$month%";
+         $stmt = $this->pdo->prepare(
+            "SELECT 
+               SUM(CASE WHEN `type`= 'income' THEN `value` ELSE 0 END) AS `incomes_sum`,
+               SUM(CASE WHEN `type`= 'expense' THEN `value` ELSE 0 END) AS `expenses_sum`
+            FROM `entries`
+            WHERE foreing_key = :userId AND `date` LIKE :period"
+         );
+         $stmt->bindValue(':userId', $userId);
+         $stmt->bindValue(':period', $period);
          $stmt->execute();
-
          return $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
-      public function insertEntry(array $data):bool{
+      public function getAvailablesTalbes($userId){
+         $stmt = $this->pdo->prepare('SELECT DATE_FORMAT(`date`, "%Y-%m") AS `y_m` FROM `entries` WHERE `foreing_key` = :userId GROUP BY `y_m`');
+         $stmt->bindValue(':userId', $userId);  
+         $stmt->execute();
+         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         echo json_encode($result);
+         exit;
+      }
 
+      public function insertEntry(array $data):bool{
          $keys = [];
          $params = [];
          $placeholders = [];

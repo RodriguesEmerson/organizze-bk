@@ -12,7 +12,11 @@
       
       switch($method){
          case 'GET':
-            $entriesController->getEntries($userId);
+            $query = parse_url($_SERVER['REQUEST_URI'])['query'];
+            parse_str($query, $parameters);
+            $year = $parameters['year'];
+            $month = $parameters['month'];
+            $entriesController->getEntries($userId, $year, $month);
             exit;
          break;
          case 'POST':
