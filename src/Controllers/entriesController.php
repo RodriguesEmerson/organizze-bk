@@ -92,17 +92,24 @@
       public function updateEntry(array $data, string $userId):void{
          $data['foreing_key'] = $userId;
          $data['last_edition'] = Utils::getDateWithTimezone('America/Sao_Paulo');
+
          try{
             foreach($data AS $field => $value){
                match(true){
                   $field === 'value' => $data[$field] = (float) $data[$field],
+                  $data[$field] === null => '',
                   default => $data[$field] = trim($value),
                };
             }
-            if($data['fixed']){
-               $data['fixed'] == '1' ? $data['fixed'] = true : $data['fixed'] = false; 
+            
+            if(array_key_exists('fixed', $data)){
+               if($data['fixed'] == '1') {
+                  $data['fixed'] = true;
+               }else{
+                  $data['fixed'] = false; 
+               }
             }
-
+            
             foreach($data AS $field => $value){
                match(true){
                   in_array($field, ['date', 'end_date', 'last_edition']) => Validators::validateDateYMD($value),
@@ -111,6 +118,11 @@
                   default => Validators::validateString($value, 255, 1),
                };
             }
+            
+            if($data['fixed'] && empty($data['end_date'])){
+               throw new InvalidArgumentException('Invalid Date format.', 400);
+            }
+            
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
             echo json_encode($e->getMessage());

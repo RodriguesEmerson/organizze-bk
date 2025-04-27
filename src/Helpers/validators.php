@@ -19,7 +19,9 @@
          return true;
       }
 
-      public static function validateDateYMD(string $date):bool{
+      public static function validateDateYMD($date):?bool{
+         
+         if(empty($date)){ return null; }
          $dateFormat = DateTime::createFromFormat('Y-m-d', $date);
          $result = $dateFormat && $dateFormat->format('Y-m-d') === $date;
          if(!$result){

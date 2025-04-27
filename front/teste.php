@@ -393,7 +393,7 @@ if ($token) {
       })
 
       function formatToYdmDate(date) {
-         dateSplited = date.split('/');
+         const dateSplited = date.split('/');
          return `${dateSplited[2]}-${dateSplited[1]}-${dateSplited[0]}`
       }
 

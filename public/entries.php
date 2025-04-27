@@ -25,8 +25,8 @@
 
             exit;
          break;  
-         case 'UPDATE':
-            echo json_encode($data);exit;
+         case 'PUT':
+            // echo json_encode($data);exit;
             $entriesController->updateEntry($data, $userId);
             exit;
          break;
