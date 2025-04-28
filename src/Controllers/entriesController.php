@@ -108,6 +108,9 @@
                }else{
                   $data['fixed'] = false; 
                }
+               if($data['fixed'] && empty($data['end_date'])){
+                  throw new InvalidArgumentException('Invalid Date format.', 400);
+               }
             }
             
             foreach($data AS $field => $value){
@@ -119,9 +122,7 @@
                };
             }
             
-            if($data['fixed'] && empty($data['end_date'])){
-               throw new InvalidArgumentException('Invalid Date format.', 400);
-            }
+            
             
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
