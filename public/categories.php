@@ -9,9 +9,13 @@
 
       switch($method){
          case ('GET'):
-            $query = parse_url($_SERVER['REQUEST_URI'])['query'];
-            parse_str($query, $parameters);
-            $type = $parameters['type'];
+            $type = null;
+            $query = parse_url($_SERVER['REQUEST_URI'])['query'] ?? null;
+            if($query){
+               parse_str($query, $parameters);
+               $type = $parameters['type'];
+            };
+
             $categoriesController->getCategories($userId, $type);
          break;
       };

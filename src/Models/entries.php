@@ -77,7 +77,7 @@
          foreach($data AS $field => $value){
             $params[":$field"] = $value;
             if($field == 'id') continue;
-            $preQuery[] = "`$field` = :$field";
+            $preQuery[] = "`$field` = :$field"; 
          }
 
          $preQuery = implode(',', $preQuery);
