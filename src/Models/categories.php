@@ -62,5 +62,12 @@
          
          return $stmt->execute($params);
       }
+
+      public function deleteCategory(string $id){
+
+         $stmt = $this->pdo->prepare('DELETE FROM `categories` WHERE `id` = :id');
+         $stmt->bindValue(':id', $id);
+         return $stmt->execute();
+      }
    }
 ?>

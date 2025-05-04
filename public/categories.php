@@ -26,6 +26,10 @@
             $data = json_decode(file_get_contents('php://input'), true);
             $categoriesController->updateCategory($data);
          break;
+         case 'DELETE':
+            $data = json_decode(file_get_contents('php://input'), true);
+            $categoriesController->deleteCategory($data);
+         break;
       };
       exit;
    }

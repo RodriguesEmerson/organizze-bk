@@ -53,5 +53,18 @@
             echo json_encode(['message' => 'Internal server error']);
          }
       }
+
+      public function deleteCategory(array $data){
+         try{
+            $id = $data['id'];
+            Validators::validateString($id, 255, 20);
+            $result = $this->categoriesModel->deleteCategory($id);
+            http_response_code(200);
+            echo json_encode(['message' => 'Categoty deleted.']);
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
+         }
+      }
    }
 ?>
