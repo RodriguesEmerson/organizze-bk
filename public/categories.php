@@ -8,7 +8,7 @@
       $userId = JWTHandler::getUserId($token);
 
       switch($method){
-         case ('GET'):
+         case 'GET':
             $type = null;
             $query = parse_url($_SERVER['REQUEST_URI'])['query'] ?? null;
             if($query){
@@ -17,6 +17,10 @@
             };
 
             $categoriesController->getCategories($userId, $type);
+         break;
+         case 'POST': 
+            $data = json_decode(file_get_contents('php://input'), true);
+            $categoriesController->insertCategory($data, $userId);
          break;
       };
       exit;
