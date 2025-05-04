@@ -44,5 +44,23 @@
          $stmt = $this->pdo->prepare($query);
          return ($stmt->execute($params));
       }
+
+      public function updateCategory(array $data):bool{
+         $params = [];
+         $preQuery = [];
+
+         foreach($data AS $field => $value){
+            $params[":$field"] = $value;
+            if($field == 'id') continue;
+            $preQuery[] = "`$field` = :$field"; 
+         }
+
+         $preQuery = implode(',', $preQuery);
+         $query = "UPDATE `categories` SET $preQuery WHERE `id` = :id";
+         
+         $stmt = $this->pdo->prepare($query);
+         
+         return $stmt->execute($params);
+      }
    }
 ?>

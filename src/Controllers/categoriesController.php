@@ -33,7 +33,24 @@
             echo json_encode($result);
 
          }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
+         }
+      }
 
+      public function updateCategory(array $data){
+         try{
+            foreach ($data AS $field => $value) {
+              Validators::validateString($value, 255, 1);
+            }
+
+            $result = $this->categoriesModel->updateCategory($data);
+            http_response_code(200);
+            echo json_encode(['message' => 'Categoty updated.']);
+
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
          }
       }
    }

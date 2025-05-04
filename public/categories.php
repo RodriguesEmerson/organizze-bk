@@ -22,6 +22,10 @@
             $data = json_decode(file_get_contents('php://input'), true);
             $categoriesController->insertCategory($data, $userId);
          break;
+         case 'PUT': 
+            $data = json_decode(file_get_contents('php://input'), true);
+            $categoriesController->updateCategory($data);
+         break;
       };
       exit;
    }
