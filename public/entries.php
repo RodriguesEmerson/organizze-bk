@@ -16,6 +16,14 @@
             parse_str($query, $parameters);
             $year = $parameters['year'];
             $month = $parameters['month'];
+            $getRows = $parameters['rows'] ?? null;
+
+            if($getRows){
+               if($getRows === 'true'){
+                  $entriesController->getEntriesCount($userId, $year, $month);
+               }
+               exit;
+            }
             $entriesController->getEntries($userId, $year, $month);
             exit;
          break;

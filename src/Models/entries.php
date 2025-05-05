@@ -8,18 +8,46 @@
       public function __construct(){
          $this->pdo = Database::getConnection();
       }
+       
 
+      //CRIAR PARAMETRO PARA PEGAR EM OFFSET E LIMIT
       public function getEntries(string $userId, string $year, string $month):array|bool{
          $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
-            'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-             FROM `entries` 
-             WHERE `foreing_key` = :userID AND `date` LIKE :period
-             ORDER BY `date` 
-             DESC 
-             LIMIT 10'
+            "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+               FROM (
+                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+                  FROM `entries`
+                  WHERE `date` LIKE :period AND `type` = 'expense'
+               ) as ranked
+               WHERE row_num BETWEEN 1 AND 10
+               UNION ALL
+               SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+               FROM (
+                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+                  FROM `entries`
+                  WHERE `date` LIKE :period AND `type` = 'income'
+               ) as ranked
+               WHERE row_num BETWEEN 1 AND 10"
          );
+         
          $stmt->bindValue(':userID', $userId);
+         $stmt->bindValue(':period', $period);
+         $stmt->execute();
+         return  $stmt->fetchAll(PDO::FETCH_ASSOC);
+      }
+
+      public function getEntriesCount(string $userId, string $year, string $month):array|bool{
+         $period = "%$year-$month%";
+         $stmt = $this->pdo->prepare(
+            "SELECT 
+               COUNT(CASE WHEN `type` = 'expense' THEN 0 END) AS expenseRows,
+               COUNT(CASE WHEN `type` = 'income' THEN 0 END) AS incomesRows
+            FROM `entries`
+            WHERE foreing_key = :userId AND `date` LIKE :period"
+         );
+         
+         $stmt->bindValue(':userId', $userId);
          $stmt->bindValue(':period', $period);
          $stmt->execute();
          return  $stmt->fetchAll(PDO::FETCH_ASSOC);

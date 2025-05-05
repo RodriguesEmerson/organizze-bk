@@ -24,6 +24,19 @@
          }
       }
 
+      public function getEntriesCount($userId, $year, $month):void{
+         try{
+            $result = $this->entriesModel->getEntriesCount($userId, $year, $month);
+            http_response_code(200);
+            echo json_encode($result);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error.']);
+            exit;
+         }
+      }
+
       public function getAvailablesTalbes(string $foreing_key){
          try{
             $result = $this->entriesModel->getAvailablesTalbes($foreing_key);
