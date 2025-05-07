@@ -1,5 +1,4 @@
 <?php
-
    require_once __DIR__ . '/../../config/database.php';
 
    class EntriesModel{
@@ -8,27 +7,13 @@
       public function __construct(){
          $this->pdo = Database::getConnection();
       }
-       
 
-      //CRIAR PARAMETRO PARA PEGAR EM OFFSET E LIMIT
       public function getEntries(string $userId, string $year, string $month):array|bool{
          $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
-            "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-               FROM (
-                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-                  FROM `entries`
-                  WHERE `date` LIKE :period AND `type` = 'expense'
-               ) as ranked
-               WHERE row_num BETWEEN 1 AND 10
-               UNION ALL
-               SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-               FROM (
-                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-                  FROM `entries`
-                  WHERE `date` LIKE :period AND `type` = 'income'
-               ) as ranked
-               WHERE row_num BETWEEN 1 AND 10"
+            'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+            FROM `entries`
+            WHERE foreing_key = :userId AND `date` LIKE :period' //It should be foreign_key - just a type mistake.
          );
          
          $stmt->bindValue(':userID', $userId);
@@ -118,3 +103,22 @@
       }
    }
 ?>
+
+
+<!-- public function getEntries(string $userId, string $year, string $month):array|bool{
+         $period = "%$year-$month%";
+         $stmt = $this->pdo->prepare(
+            "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+               FROM (
+                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+                  FROM `entries`
+                  WHERE `date` LIKE :period AND `type` = 'expense'
+               ) as ranked
+               UNION ALL
+               SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+               FROM (
+                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+                  FROM `entries`
+                  WHERE `date` LIKE :period AND `type` = 'income'
+               ) as ranked"
+         ); -->

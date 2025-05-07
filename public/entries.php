@@ -3,10 +3,8 @@
    require __DIR__ . '/../src/inc/validateToken.inc.php';
    require_once __DIR__ . '/../src/Controllers/entriesController.php';
    $entriesController = new EntriesController();
-
    
    if($request == 'entries.php'){
-      
       $data = json_decode(file_get_contents('php://input'), true) ?? null;
       $userId = JWTHandler::getUserId($token);
       
@@ -16,25 +14,18 @@
             parse_str($query, $parameters);
             $year = $parameters['year'];
             $month = $parameters['month'];
-            $getRows = $parameters['rows'] ?? null;
 
-            if($getRows){
-               if($getRows === 'true'){
-                  $entriesController->getEntriesCount($userId, $year, $month);
-               }
-               exit;
-            }
             $entriesController->getEntries($userId, $year, $month);
             exit;
          break;
          case 'POST':
+            //I know it has a better way to do it, but it is enough for now.
             $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
             $entriesController->insertEntry($data['id'], $userId, $data['description'], $data['category'], $data['type'], $data['date'], $data['fixed'], $data['end_date'], $data['icon'], $data['value']);
 
             exit;
          break;  
          case 'PUT':
-            // echo json_encode($data);exit;
             $entriesController->updateEntry($data, $userId);
             exit;
          break;

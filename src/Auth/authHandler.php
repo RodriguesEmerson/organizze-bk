@@ -46,7 +46,7 @@
       public static function signout(){
          try{
             setcookie('JWTToken', '', [
-               'expires' => time() - 3600,  //Delete the cookie
+               'expires' => time() - (30 * 24 * 60 * 60),  //Delete the cookie //30 days
                'path' => '/',
                'httponly' => true,
                'secure' => true,
@@ -57,7 +57,7 @@
             echo json_encode([
                'success' => true,
                'message' => 'User signed out succssfuly',
-               'redirect' => 'http://localhost/organizze-bk/front/signin.php'
+               'redirect' => 'http://localhost:3000/dashboard'
             ]);
          }catch(Exception $e){
             http_response_code(500);
