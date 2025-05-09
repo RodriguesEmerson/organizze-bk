@@ -13,23 +13,8 @@
          $stmt = $this->pdo->prepare(
             'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
             FROM `entries`
-            WHERE foreing_key = :userId AND `date` LIKE :period' //It should be foreign_key - just a type mistake.
-         );
-         
-         $stmt->bindValue(':userID', $userId);
-         $stmt->bindValue(':period', $period);
-         $stmt->execute();
-         return  $stmt->fetchAll(PDO::FETCH_ASSOC);
-      }
-
-      public function getEntriesCount(string $userId, string $year, string $month):array|bool{
-         $period = "%$year-$month%";
-         $stmt = $this->pdo->prepare(
-            "SELECT 
-               COUNT(CASE WHEN `type` = 'expense' THEN 0 END) AS expenseRows,
-               COUNT(CASE WHEN `type` = 'income' THEN 0 END) AS incomesRows
-            FROM `entries`
-            WHERE foreing_key = :userId AND `date` LIKE :period"
+            WHERE foreing_key = :userId AND `date` LIKE :period
+            ORDER BY `date` DESC' //It should be foreign_key - just a typo mistake.
          );
          
          $stmt->bindValue(':userId', $userId);
@@ -57,9 +42,7 @@
          $stmt = $this->pdo->prepare('SELECT DATE_FORMAT(`date`, "%Y-%m") AS `y_m` FROM `entries` WHERE `foreing_key` = :userId GROUP BY `y_m`');
          $stmt->bindValue(':userId', $userId);  
          $stmt->execute();
-         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-         echo json_encode($result);
-         exit;
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
       public function insertEntry(array $data):bool{
@@ -102,23 +85,22 @@
 
       }
    }
+   // public function getEntries(string $userId, string $year, string $month):array|bool{
+   //          $period = "%$year-$month%";
+   //          $stmt = $this->pdo->prepare(
+   //             "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+   //                FROM (
+   //                   SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+   //                   FROM `entries`
+   //                   WHERE `date` LIKE :period AND `type` = 'expense'
+   //                ) as ranked
+   //                UNION ALL
+   //                SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+   //                FROM (
+   //                   SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
+   //                   FROM `entries`
+   //                   WHERE `date` LIKE :period AND `type` = 'income'
+   //                ) as ranked"
+   //          ); 
 ?>
 
-
-<!-- public function getEntries(string $userId, string $year, string $month):array|bool{
-         $period = "%$year-$month%";
-         $stmt = $this->pdo->prepare(
-            "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-               FROM (
-                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-                  FROM `entries`
-                  WHERE `date` LIKE :period AND `type` = 'expense'
-               ) as ranked
-               UNION ALL
-               SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-               FROM (
-                  SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-                  FROM `entries`
-                  WHERE `date` LIKE :period AND `type` = 'income'
-               ) as ranked"
-         ); -->
