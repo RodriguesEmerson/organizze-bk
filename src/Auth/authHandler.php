@@ -11,14 +11,19 @@
          $this->userModel = new User();
       }
 
-      public function authenticateUser(string $email, string $password){
+      public function authenticateUser(string $email, string $password, bool $remember){
          try{
             $user = $this->userModel->getUserByEmail($email);
+            
+            $tokenExpiresTime = time() + 3600; //It expires in 1 hour;
+            if($remember){
+               $tokenExpiresTime = time() + (30 * 24 * 60 * 60);  //It expires in 30 days
+            }
             
             if($user && password_verify($password, $user['password'])){
                $token = JWTHandler::generateToken($user['id'], $user['name']);
                setcookie('JWTToken', $token, [
-                  'expires' => time() + 3600,  //It expires in 1 hour
+                  'expires' => $tokenExpiresTime,  //It expires in 1 hour
                   'path' => '/',               //Avalaible for the entire site
                   'httponly' => true,          //It protects against accesses by javascript
                   'secure' => true,            //Only HTTPS
