@@ -24,6 +24,20 @@
          }
       }
 
+      public function getYearlyData(string $year, string $foreing_key){
+         try{
+            Validators::validateString($year, 4, 4);
+            $result = $this->entriesModel->getYearlyData($year, $foreing_key);
+            http_response_code(200);
+            echo json_encode($result);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error.']);
+            exit;
+         }
+      }
+
       public function getAvailablesTalbes(string $foreing_key){
 
          try{
@@ -133,6 +147,22 @@
             $this->entriesModel->updateEntry($data);
             http_response_code(200);
             echo json_encode(['message' => 'Entry updated successfuly', 'code' => '200']);
+            exit;
+         }catch(Exception $e){
+            http_response_code(500);
+            echo json_encode(['message' => 'Internal server error']);
+            exit;
+         }
+      }
+
+      public function deleteEntry(array $data, string $userId){
+         try{
+            $entryId = $data['id'];
+            Validators::validateString($entryId, 255, 1);
+
+            $this->entriesModel->deleteEntry($entryId, $userId);
+            http_response_code(200);
+            echo json_encode(['message' => 'Entry deleted successfuly']);
             exit;
          }catch(Exception $e){
             http_response_code(500);

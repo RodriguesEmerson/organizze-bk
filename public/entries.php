@@ -12,10 +12,22 @@
          case 'GET':
             $query = parse_url($_SERVER['REQUEST_URI'])['query'];
             parse_str($query, $parameters);
-            $year = $parameters['year'];
-            $month = $parameters['month'];
+            $reporType = $parameters['reportType'];
 
-            $entriesController->getEntries($userId, $year, $month);
+            switch($reporType){
+               case 'monthly':
+                  $year = $parameters['year'];
+                  $month = $parameters['month'];
+                  $entriesController->getEntries($userId, $year, $month);
+               break;
+               case 'yearly':
+                  $year = $parameters['year'];
+                  $entriesController->getYearlyData($year, $userId);
+               break;
+               case 'availableTables':
+                  $entriesController->getAvailablesTalbes($userId);
+               break;
+            };
             exit;
          break;
          case 'POST':
@@ -28,6 +40,9 @@
          case 'PUT':
             $entriesController->updateEntry($data, $userId);
             exit;
+         break;
+         case 'DELETE':
+            $entriesController->deleteEntry($data, $userId);
          break;
 
       };

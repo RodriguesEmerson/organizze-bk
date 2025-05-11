@@ -23,7 +23,28 @@
          return  $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
-      public function getEntriesSum(string $userId, string $year, string $month){
+      public function getYearlyData(string $year, string $userId):array|bool{
+         $yearMonth = "%$year-%m";
+         $stmt = $this->pdo->prepare(
+            'SELECT *
+               FROM (
+                  SELECT 
+                     DATE_FORMAT(`date`, :yearMonth) AS month, `type`, SUM(`value`) AS total
+                     FROM `entries`
+                     WHERE `foreing_key` = :userId
+                     GROUP BY  month, `type`
+               ) AS mensal
+               ORDER BY month ASC' //Precisar ser ASC, porque quando o Front faz um loop fica DESC
+         );
+         
+         $stmt->bindValue(':yearMonth', $yearMonth);
+         $stmt->bindValue(':userId', $userId);
+         $stmt->execute();
+         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+         exit;
+      }
+
+      public function getEntriesSum(string $userId, string $year, string $month):array|bool{
          $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
             "SELECT 
@@ -66,7 +87,7 @@
          return ($stmt->execute($params));
       }
 
-      public function updateEntry(array $data){
+      public function updateEntry(array $data):array|bool{
          $params = [];
          $preQuery = [];
 
@@ -82,7 +103,17 @@
          $stmt = $this->pdo->prepare($query);
          
          return $stmt->execute($params);
+      }
 
+      public function deleteEntry(string $entryId, string $userId){
+         $stmt = $this->pdo->prepare(
+            'DELETE FROM `entries` WHERE `foreing_key` = :userId AND `id` = :entryId'
+         );
+         $stmt->bindValue(':userId', $userId);
+         $stmt->bindValue(':entryId', $entryId);
+
+         return $stmt->execute();
+         
       }
    }
    // public function getEntries(string $userId, string $year, string $month):array|bool{
