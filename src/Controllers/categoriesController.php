@@ -37,14 +37,13 @@
             echo json_encode(['message' => 'Internal server error']);
          }
       }
-
-      public function updateCategory(array $data){
+ 
+      public function updateCategory(array $data, string $userId){
          try{
             foreach ($data AS $field => $value) {
               Validators::validateString($value, 255, 1);
             }
-
-            $result = $this->categoriesModel->updateCategory($data);
+            $this->categoriesModel->updateCategory($data, $userId);
             http_response_code(200);
             echo json_encode(['message' => 'Categoty updated.']);
 
@@ -54,11 +53,11 @@
          }
       }
 
-      public function deleteCategory(array $data){
+      public function deleteCategory(array $data, string $userId){
          try{
             $id = $data['id'];
             Validators::validateString($id, 255, 20);
-            $result = $this->categoriesModel->deleteCategory($id);
+            $result = $this->categoriesModel->deleteCategory($id, $userId);
             http_response_code(200);
             echo json_encode(['message' => 'Categoty deleted.']);
          }catch(Exception $e){

@@ -105,7 +105,7 @@
          return $stmt->execute($params);
       }
 
-      public function deleteEntry(string $entryId, string $userId){
+      public function deleteEntry(string $entryId, string $userId):bool{
          $stmt = $this->pdo->prepare(
             'DELETE FROM `entries` WHERE `foreing_key` = :userId AND `id` = :entryId'
          );
@@ -113,7 +113,6 @@
          $stmt->bindValue(':entryId', $entryId);
 
          return $stmt->execute();
-         
       }
    }
    // public function getEntries(string $userId, string $year, string $month):array|bool{

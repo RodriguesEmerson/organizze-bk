@@ -45,25 +45,45 @@
          return ($stmt->execute($params));
       }
 
-      public function updateCategory(array $data):bool{
-         $params = [];
-         $preQuery = [];
+      public function updateCategory(array $data, string $userId):bool{
 
-         foreach($data AS $field => $value){
-            $params[":$field"] = $value;
-            if($field == 'id') continue;
-            $preQuery[] = "`$field` = :$field"; 
+         $stmtCategory = $this->pdo->prepare(
+         'UPDATE `categories` 
+         SET `name` = :name, `type` = :type, `icon` = :icon 
+         WHERE `foreing_key` = :userId AND `id` = :id'
+         );
+         $stmtCategory->bindValue(':name', $data['name']);
+         $stmtCategory->bindValue(':type', $data['type']);
+         $stmtCategory->bindValue(':icon', $data['icon']);
+         $stmtCategory->bindValue(':id', $data['id']);
+         $stmtCategory->bindValue(':userId', $userId);
+
+         $stmtEntries = $this->pdo->prepare(
+            'UPDATE `entries` 
+            SET `category` = :category, `type` = :type, `icon` = :icon 
+            WHERE `foreing_key` = :userId AND `category` = :categoryOldName'
+         );
+         $stmtEntries->bindValue(':category', $data['name']);
+         $stmtEntries->bindValue(':type', $data['type']);
+         $stmtEntries->bindValue(':icon', $data['icon']);
+         $stmtEntries->bindValue(':userId', $userId);
+         $stmtEntries->bindValue(':categoryOldName', $data['categoryOldName']);
+
+         try{
+            $this->pdo->beginTransaction(); // Inicia a transação
+               //Executa uma ou mais queries
+               $stmtCategory->execute();
+               $stmtEntries->execute();
+            $this->pdo->commit(); //Salva as alterações se tudo deu certo, 
+            return true;
+
+         }catch(Exception $e){
+            $this->pdo->rollBack(); //Se dar erro em alguma query, desfaz tudo.
+            throw new Exception($e->getMessage(), $e->getCode());
          }
-
-         $preQuery = implode(',', $preQuery);
-         $query = "UPDATE `categories` SET $preQuery WHERE `id` = :id";
-         
-         $stmt = $this->pdo->prepare($query);
-         
-         return $stmt->execute($params);
       }
 
-      public function deleteCategory(string $id){
+      public function deleteCategory(string $id, string $userId){
 
          $stmt = $this->pdo->prepare('DELETE FROM `categories` WHERE `id` = :id');
          $stmt->bindValue(':id', $id);

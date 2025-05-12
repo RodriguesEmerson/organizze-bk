@@ -3,6 +3,7 @@
    require __DIR__ . '/../src/inc/validateToken.inc.php';
    require_once __DIR__ . '/../src/Controllers/categoriesController.php';
 
+
    if($request == 'categories.php'){
       $categoriesController = new CategoriesController();
       $userId = JWTHandler::getUserId($token);
@@ -24,11 +25,11 @@
          break;
          case 'PUT': 
             $data = json_decode(file_get_contents('php://input'), true);
-            $categoriesController->updateCategory($data);
+            $categoriesController->updateCategory($data, $userId);
          break;
          case 'DELETE':
             $data = json_decode(file_get_contents('php://input'), true);
-            $categoriesController->deleteCategory($data);
+            $categoriesController->deleteCategory($data, $userId);
          break;
       };
       exit;
