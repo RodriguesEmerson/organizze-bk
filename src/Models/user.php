@@ -21,27 +21,29 @@
          return $result;
       }
 
+      public function getUserInfo(string $userId):array|bool{
+         
+         $stmt = $this->pdo->prepare('SELECT `name`, `email`, `image` FROM `users` WHERE `id` = :userId');
+         $stmt->bindValue(':userId', $userId);
+         $stmt->execute();
+         return $stmt->fetch(PDO::FETCH_ASSOC);
+      }
+
       public function createUser(string $id, string $name, string $email, string $lastname, string $startDate  , string $password):bool{
 
-         if(!empty($id) && !empty($name) && !empty($lastname) && !empty($email) && !empty($startDate) && !empty($password)){
-            $stmt = $this->pdo->prepare('INSERT INTO `users` (`id`, `name`, `email`, `lastname`, `start_date`, `password`)
-                                             VALUES (:id, :name, :email, :lastname, :start_date, :password)');
-            $stmt->bindValue(':id', $id);
-            $stmt->bindValue(':name', $name);
-            $stmt->bindValue(':lastname', $lastname);
-            $stmt->bindValue(':email', $email);
-            $stmt->bindValue(':start_date', $startDate);
-            $stmt->bindValue(':password', $password);
-            
-            try{
-               $stmt->execute();
-               return true;
-            }catch(Exception $e){
-               throw new Exception('Internal server error', 500);
-               exit;
-            }
-         };
-         throw new Exception('All fields are required', 400);
+         $stmt = $this->pdo->prepare(
+            'INSERT INTO `users` (`id`, `name`, `email`, `lastname`, `start_date`, `password`)
+            VALUES (:id, :name, :email, :lastname, :start_date, :password)'
+         );
+
+         $stmt->bindValue(':id', $id);
+         $stmt->bindValue(':name', $name);
+         $stmt->bindValue(':lastname', $lastname);
+         $stmt->bindValue(':email', $email);
+         $stmt->bindValue(':start_date', $startDate);
+         $stmt->bindValue(':password', $password);
+         
+         return $stmt->execute();
       }
    }
 ?>

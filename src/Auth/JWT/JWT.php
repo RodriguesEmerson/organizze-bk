@@ -8,15 +8,16 @@
    class JWTHandler{
       private static $secret_key;
 
-      public static function generateToken($userId, $userName){
+      public static function generateToken($userId, $userName, $userEmail, $tokenExpiresTime){
          self::$secret_key = getenv('JWT_SECRET_KEY');
 
          $payload = [
             'iss' => 'localhost',
             'iat' => time(),
-            'exp' => time() + (60 * 60), //1 hour
+            'exp' => $tokenExpiresTime, 
             'userId' => $userId,
             'userName' => $userName,
+            'useEmail' => $userEmail
          ];
          return JWT::encode($payload, self::$secret_key, 'HS256');
       }
@@ -35,6 +36,18 @@
             try{
                $decoded = JWT::decode($token, new key(self::$secret_key, 'HS256'));
                return $decoded->userId; //Authenticated user id;
+            }catch(Exception $e){
+               return false;
+            }
+         }
+         return false;
+      }
+
+      public static function getUserInfo(string $token):array|bool{
+         if($token){
+            try{
+               $decoded = JWT::decode($token, new key(self::$secret_key, 'HS256'));
+               return ['email' => $decoded->userEmail, 'name' => $decoded->userName];
             }catch(Exception $e){
                return false;
             }
