@@ -54,10 +54,20 @@
       }
 
       public function deleteCategory(array $data, string $userId){
-         try{
-            $id = $data['id'];
-            Validators::validateString($id, 255, 20);
-            $result = $this->categoriesModel->deleteCategory($id, $userId);
+
+         
+         try{ 
+            
+            foreach($data AS $key => $value) {
+               match ($key) {
+                  'name' => Validators::validateString($value, 30, 1),
+                  'type' => Validators::validateString($value, 8, 6),
+                  'icon' => Validators::validateString($value, 255, 4),
+                  default => Validators::validateString($value, 255, 1)
+               };
+            }
+            
+            $result = $this->categoriesModel->deleteCategory($data, $userId);
             http_response_code(200);
             echo json_encode(['message' => 'Categoty deleted.']);
          }catch(Exception $e){

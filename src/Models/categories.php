@@ -83,11 +83,34 @@
          }
       }
 
-      public function deleteCategory(string $id, string $userId){
+      public function deleteCategory(array $data, string $userId){
 
-         $stmt = $this->pdo->prepare('DELETE FROM `categories` WHERE `id` = :id');
-         $stmt->bindValue(':id', $id);
-         return $stmt->execute();
+         $stmtCategory = $this->pdo->prepare('DELETE FROM `categories` WHERE `id` = :id');
+         $stmtCategory->bindValue(':id', $data['id']);
+
+         $stmtEntries = $this->pdo->prepare(
+            'UPDATE `entries`
+            SET `category` = :category, `icon` = :icon 
+            WHERE `foreing_key` = :userId AND `category` = :name'
+         );
+         $stmtEntries->bindValue(':category', 'sem categoria');
+         $stmtEntries->bindValue(':icon', 'c-no-category.png');
+         $stmtEntries->bindValue(':userId', $userId);
+         $stmtEntries->bindValue(':name', $data['name']);
+
+         try{
+
+            $this->pdo->beginTransaction();
+               $stmtCategory->execute();
+               $stmtEntries->execute();
+            $this->pdo->commit();
+            return true;
+
+         }catch(Exception $e){
+            
+            $this->pdo->rollBack();
+            throw new Exception($e->getMessage(), $e->getCode());
+         }
       }
    }
 ?>
