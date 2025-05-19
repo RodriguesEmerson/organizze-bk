@@ -1,5 +1,6 @@
 <?php
    require_once __DIR__ . '/../../config/database.php';
+   require_once __DIR__ . '/../Helpers/utils.php';
 
    class EntriesModel{
       private $pdo;
@@ -11,7 +12,7 @@
       public function getEntries(string $userId, string $year, string $month):array|bool{
          $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
-            'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
+            'SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`, `effected`, `recurrence_id`
             FROM `entries`
             WHERE foreing_key = :userId AND `date` LIKE :period
             ORDER BY `date` DESC' //It should be foreign_key - just a typo mistake.
@@ -34,7 +35,7 @@
                      WHERE `foreing_key` = :userId
                      GROUP BY  month, `type`
                ) AS mensal
-               ORDER BY month ASC' //Precisar ser ASC, porque quando o Front faz um loop fica DESC
+               ORDER BY month ASC' //Precisar ser ASC, quando o Front faz um loop ficará DESC
          );
          
          $stmt->bindValue(':yearMonth', $yearMonth);
@@ -48,8 +49,8 @@
          $period = "%$year-$month%";
          $stmt = $this->pdo->prepare(
             "SELECT 
-               SUM(CASE WHEN `type`= 'income' THEN `value` ELSE 0 END) AS `incomes_sum`,
-               SUM(CASE WHEN `type`= 'expense' THEN `value` ELSE 0 END) AS `expenses_sum`
+               SUM(CASE WHEN `type`= 'income' AND `effected` = 1 THEN `value` ELSE 0 END) AS `incomes_sum`,
+               SUM(CASE WHEN `type`= 'expense' AND `effected` = 1 THEN `value` ELSE 0 END) AS `expenses_sum`
             FROM `entries`
             WHERE foreing_key = :userId AND `date` LIKE :period"
          );
@@ -66,28 +67,57 @@
          return $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
 
+
       public function insertEntry(array $data):bool{
-         $keys = [];
-         $params = [];
-         $placeholders = [];
-         
+         $columns = []; //Query's columns;
+         $params = []; //Query's params;
+         $singleEntryPlaceholders = [];
+         $allPlaceholders = [];
+
          foreach($data AS $field => $value){
-            $keys[] = "`$field`";
-            $placeholders[] = ":$field";
+            $columns[] = "`$field`";
+            $singleEntryPlaceholders[] = ":$field";
             $params[":$field"] = $value;
-         }
+         }  
 
-         $fields = implode(',', $keys);
-         $placeholders = implode(',' , $placeholders);
+         $columns = implode(',', $columns); 
+         $allPlaceholders[] = "(" . implode(',' , $singleEntryPlaceholders) . ")"; 
 
+         if($data['fixed'] === true){
+            $startDate = new DateTime($data['date']);
+            $endDate = new DateTime($data['end_date']);
+            //Moths from start to end date.
+            $monthsFromStartToEndDate = $startDate->diff($endDate)->m ;
+            
+            for($i = 1; $i <= $monthsFromStartToEndDate; $i++){
+               //It use the index as the number of months to add;
+               $currentDate = Utils::incrementOneMonth($data['date'], $i);
+
+               $placeholdersRow = [];
+
+               foreach ($data as $field => $value) {
+                  if($field == 'date'){$value = $currentDate;} //Change to new date;
+                  if($field == 'id'){$value = Utils::genereteUUID();} //Create a new UUID for the entry;
+                  if($field == 'effected'){$value = false;} //The other entries isn't effect yet;
+                  $key = ":$field" . "_$i"; //placeholder - :field_1
+                  $placeholdersRow[] = $key; //Add the placeholder
+                  $params[$key] = $value; //Add the param - :field_1 = value;
+               };
+
+               $allPlaceholders[] = "(" . implode(',', $placeholdersRow) . ")";
+            }
+         }  
+         
          //Puting together the SQL Query.
-         $sql = "INSERT INTO `entries` ($fields) VALUES ($placeholders)";
-         $stmt = $this->pdo->prepare($sql);
+         $allPlaceholders =  implode(',' , $allPlaceholders); 
+         $query = "INSERT INTO `entries` ($columns) VALUES $allPlaceholders";
+         $stmt = $this->pdo->prepare($query);
 
          return ($stmt->execute($params));
       }
 
-      public function updateEntry(array $data):array|bool{
+
+      public function updateEntry(array $data, string $userId):array|bool{
          $params = [];
          $preQuery = [];
 
@@ -115,22 +145,5 @@
          return $stmt->execute();
       }
    }
-   // public function getEntries(string $userId, string $year, string $month):array|bool{
-   //          $period = "%$year-$month%";
-   //          $stmt = $this->pdo->prepare(
-   //             "SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-   //                FROM (
-   //                   SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-   //                   FROM `entries`
-   //                   WHERE `date` LIKE :period AND `type` = 'expense'
-   //                ) as ranked
-   //                UNION ALL
-   //                SELECT `id`, `description`, `category`, `type`, `date`, `fixed`, `end_date`, `last_edition`, `icon`, `value`
-   //                FROM (
-   //                   SELECT *, ROW_NUMBER() OVER (ORDER BY `date` DESC) as row_num
-   //                   FROM `entries`
-   //                   WHERE `date` LIKE :period AND `type` = 'income'
-   //                ) as ranked"
-   //          ); 
 ?>
 

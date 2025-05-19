@@ -12,11 +12,14 @@
          return true;
       }
 
-      public static function validateFloat($number):bool{
-         if(!is_float($number) || $number === null){
-            throw new InvalidArgumentException('Invalid number format', 400);
+      public static function validateNumeric($number):bool{
+         if(is_numeric($number)){
+            if(is_float($number) || is_int($number)){
+               return true;
+            }
          }
-         return true;
+         
+         throw new InvalidArgumentException('Invalid number format', 400);
       }
 
       public static function validateDateYMD($date):?bool{

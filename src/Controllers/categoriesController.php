@@ -54,8 +54,6 @@
       }
 
       public function deleteCategory(array $data, string $userId){
-
-         
          try{ 
             
             foreach($data AS $key => $value) {

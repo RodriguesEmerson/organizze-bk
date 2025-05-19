@@ -52,39 +52,36 @@
          }
       }
 
-      public function insertEntry(string $id, string $foreing_key, string $description, string $category, string $type, string $date, bool $fixed, string|null $end_date, string $icon, string $value):void{
+      public function insertEntry(array $data, string $foreing_key):void{
+         // echo json_encode($data['value']);exit;
 
-         $data = [
-            'id' => $id,
-            'foreing_key' => trim($foreing_key),
-            'description' => trim($description),
-            'category' => trim($category),
-            'type' => trim($type),
-            'date' => trim($date),
-            'fixed' => $fixed,
-            'end_date' => $end_date,
-            'last_edition' => Utils::getDateWithTimezone('America/Sao_Paulo'),
-            'icon' => trim($icon),
-            'value' => $value,
-         ];
+         foreach($data AS $field => $value){
+            match ($field) {
+                'fixed'=> $data['fixed'] = $value,
+                'value'=>  $data['value'] = $value,
+                'effected'=>  $data['effected'] = $value,
+                default => $data[$field] = trim($value),
+            };
+         };
+         $data['last_edition'] = Utils::getDateWithTimezone('America/Sao_Paulo');
+         $data['foreing_key'] = $foreing_key;
 
          //Validating data
          try{
             foreach($data AS $field => $value){
-               if(in_array($field, ['value', 'fixed', 'date', 'end_date', 'last_edition'])) continue;
+               if(in_array($field, ['value', 'fixed', 'effected', 'date', 'end_date', 'last_edition'])) continue;
                Validators::validateString($value, 255, 1);
             }
             
             Validators::validateBool($data['fixed']);
+            Validators::validateBool($data['effected']);
             Validators::validateDateYMD($data['date']);
             
-            if($data['fixed']){
-               $data['end_date'] = trim($data['end_date']);
+            if($data['fixed'] === true){
                Validators::validateDateYMD($data['end_date']);
             }
             
-            $data['value'] = Utils::formatToNumericNumber($data['value']);
-            Validators::validateFloat($data['value']);
+            Validators::validateNumeric($data['value']);
 
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
@@ -107,15 +104,17 @@
       public function updateEntry(array $data, string $userId):void{
          $data['foreing_key'] = $userId;
          $data['last_edition'] = Utils::getDateWithTimezone('America/Sao_Paulo');
-
+         
          try{
             foreach($data AS $field => $value){
                match(true){
                   $field === 'value' => $data[$field] = (float) $data[$field],
                   $data[$field] === null => '',
+                  $field === 'effected' => $data[$field] = $value,
                   default => $data[$field] = trim($value),
                };
             }
+            
             
             if(array_key_exists('fixed', $data)){
                if($data['fixed'] == '1') {
@@ -132,10 +131,12 @@
                match(true){
                   in_array($field, ['date', 'end_date', 'last_edition']) => Validators::validateDateYMD($value),
                   $field === 'fixed' => Validators::validateBool($data['fixed']),
-                  $field === 'value' => Validators::validateFloat($value),
+                  $field === 'effected' => Validators::validateBool($data['effected']),
+                  $field === 'value' => Validators::validateNumeric($value),
                   default => Validators::validateString($value, 255, 1),
                };
-            }
+            }  
+
             
          }catch(InvalidArgumentException $e){
             http_response_code($e->getCode());
@@ -144,7 +145,7 @@
          }
 
          try{
-            $this->entriesModel->updateEntry($data);
+            $this->entriesModel->updateEntry($data, $userId);
             http_response_code(200);
             echo json_encode(['message' => 'Entry updated successfuly', 'code' => '200']);
             exit;
