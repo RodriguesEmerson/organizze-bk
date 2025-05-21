@@ -32,21 +32,22 @@ use Ramsey\Uuid\Uuid; //The composer ramsey/uuid must be installed (composer req
          return $uuid; //Ex: strig 3f0a3b80-d87e-4a83-bb1c-f92711db45d4
       }
 
-      public static function incrementOneMonth($date, $howMuch):string{
+      public static function incrementMonth($date, $monthsToAdd):string{
          $explodedDate = explode('-', $date);
          $year = (int) $explodedDate[0];
-         $month = (int) $explodedDate[1] + $howMuch;
+         $month = (int) $explodedDate[1] + $monthsToAdd;
          $day = (int) $explodedDate[2];
          
          if($day > 28){
             for($d = $explodedDate[2] ; $d > 27; $d--){
-               $testDate = sprintf('%04d-%02d-%02d', $year, $month, $d);
-               if(self::isValidDate($testDate)){
-                  return $testDate;
+               //Correctly formats the date in the YYYY-MM-DD pattern, adding leading zeros when necessary.
+               $formattedDate = sprintf('%04d-%02d-%02d', $year, $month, $d);
+               if(self::isValidDate($formattedDate)){
+                  return $formattedDate;
                }
             }
          }
-         return (new DateTime($date))->modify("+$howMuch month")->format('Y-m-d');
+         return (new DateTime($date))->modify("+$monthsToAdd month")->format('Y-m-d');
       }
 
       public static function isValidDate($date):bool{
@@ -55,6 +56,12 @@ use Ramsey\Uuid\Uuid; //The composer ramsey/uuid must be installed (composer req
             return true;
          };
          return false;
+      }
+
+      public static function getDayOfTheDate($date):string{
+         $explodedDate = explode('-', $date);
+         $day =  $explodedDate[2];
+         return $day;
       }
    }
 

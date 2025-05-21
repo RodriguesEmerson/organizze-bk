@@ -31,10 +31,7 @@
             exit;
          break;
          case 'POST':
-            //I know it has a better way to do it, but it is enough for now.
-            // $data['fixed'] == 1 ? $data['fixed'] = true : $data['fixed'] = false; 
             $entriesController->insertEntry($data, $userId);
-
             exit;
          break;  
          case 'PUT':

@@ -1,5 +1,5 @@
 <?php 
-   require_once __DIR__ . '/../Models/entries.php';
+   require_once __DIR__ . '/../Models/entries/EntriesModel.php';
    require_once __DIR__ . '/../Helpers/validators.php';
    require_once __DIR__ . '/../Helpers/utils.php';
 
@@ -111,6 +111,7 @@
                   $field === 'value' => $data[$field] = (float) $data[$field],
                   $data[$field] === null => '',
                   $field === 'effected' => $data[$field] = $value,
+                  $field === 'change_recurrence' => $data[$field] = $value,
                   default => $data[$field] = trim($value),
                };
             }
@@ -132,6 +133,7 @@
                   in_array($field, ['date', 'end_date', 'last_edition']) => Validators::validateDateYMD($value),
                   $field === 'fixed' => Validators::validateBool($data['fixed']),
                   $field === 'effected' => Validators::validateBool($data['effected']),
+                  $field === 'change_recurrence' => Validators::validateBool($data['change_recurrence']),
                   $field === 'value' => Validators::validateNumeric($value),
                   default => Validators::validateString($value, 255, 1),
                };

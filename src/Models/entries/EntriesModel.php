@@ -1,6 +1,8 @@
 <?php
-   require_once __DIR__ . '/../../config/database.php';
-   require_once __DIR__ . '/../Helpers/utils.php';
+   require_once __DIR__ . '/../../../config/database.php';
+   require_once __DIR__ . '/../../Helpers/utils.php';
+   require_once __DIR__ . '/helpers/buildEntryUpdateQuery.php';
+   require_once __DIR__ . '/helpers/buildEntryInsertQuery.php';
 
    class EntriesModel{
       private $pdo;
@@ -69,69 +71,17 @@
 
 
       public function insertEntry(array $data):bool{
-         $columns = []; //Query's columns;
-         $params = []; //Query's params;
-         $singleEntryPlaceholders = [];
-         $allPlaceholders = [];
+         ['query' => $query, 'params' => $params] = BuildEntryInsertQuery::query($data);
 
-         foreach($data AS $field => $value){
-            $columns[] = "`$field`";
-            $singleEntryPlaceholders[] = ":$field";
-            $params[":$field"] = $value;
-         }  
-
-         $columns = implode(',', $columns); 
-         $allPlaceholders[] = "(" . implode(',' , $singleEntryPlaceholders) . ")"; 
-
-         if($data['fixed'] === true){
-            $startDate = new DateTime($data['date']);
-            $endDate = new DateTime($data['end_date']);
-            //Moths from start to end date.
-            $monthsFromStartToEndDate = $startDate->diff($endDate)->m ;
-            
-            for($i = 1; $i <= $monthsFromStartToEndDate; $i++){
-               //It use the index as the number of months to add;
-               $currentDate = Utils::incrementOneMonth($data['date'], $i);
-
-               $placeholdersRow = [];
-
-               foreach ($data as $field => $value) {
-                  if($field == 'date'){$value = $currentDate;} //Change to new date;
-                  if($field == 'id'){$value = Utils::genereteUUID();} //Create a new UUID for the entry;
-                  if($field == 'effected'){$value = false;} //The other entries isn't effect yet;
-                  $key = ":$field" . "_$i"; //placeholder - :field_1
-                  $placeholdersRow[] = $key; //Add the placeholder
-                  $params[$key] = $value; //Add the param - :field_1 = value;
-               };
-
-               $allPlaceholders[] = "(" . implode(',', $placeholdersRow) . ")";
-            }
-         }  
-         
-         //Puting together the SQL Query.
-         $allPlaceholders =  implode(',' , $allPlaceholders); 
-         $query = "INSERT INTO `entries` ($columns) VALUES $allPlaceholders";
          $stmt = $this->pdo->prepare($query);
-
          return ($stmt->execute($params));
       }
 
 
       public function updateEntry(array $data, string $userId):array|bool{
-         $params = [];
-         $preQuery = [];
-
-         foreach($data AS $field => $value){
-            $params[":$field"] = $value;
-            if($field == 'id') continue;
-            $preQuery[] = "`$field` = :$field"; 
-         }
-
-         $preQuery = implode(',', $preQuery);
-         $query = "UPDATE `entries` SET $preQuery WHERE `id` = :id";
+         ['query' => $query, 'params' => $params] = BuildEntryUpdateQuery::query($data, $userId);
          
          $stmt = $this->pdo->prepare($query);
-         
          return $stmt->execute($params);
       }
 
