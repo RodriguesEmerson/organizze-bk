@@ -1,7 +1,5 @@
 <?php
-
-use Ramsey\Uuid\Rfc4122\Validator;
-use Ramsey\Uuid\Uuid; //The composer ramsey/uuid must be installed (composer require ramsey/uuid)
+   use Ramsey\Uuid\Uuid; //The composer ramsey/uuid must be installed (composer require ramsey/uuid)
 
    class Utils{
       public static function getDateWithTimezone($timezone){
@@ -32,7 +30,7 @@ use Ramsey\Uuid\Uuid; //The composer ramsey/uuid must be installed (composer req
          return $uuid; //Ex: strig 3f0a3b80-d87e-4a83-bb1c-f92711db45d4
       }
 
-      public static function incrementMonth($date, $monthsToAdd):string{
+      public static function incrementMonths($date, $monthsToAdd):string{
          $explodedDate = explode('-', $date);
          $year = (int) $explodedDate[0];
          $month = (int) $explodedDate[1] + $monthsToAdd;

@@ -1,31 +1,30 @@
-
 <?php
+require_once __DIR__ . '/../../../Helpers/utils.php';
 
-   require_once __DIR__ . '/../../../Helpers/utils.php';
-
+// Classe responsável por construir a query de update
 class BuildEntryUpdateQuery{
-   public static function query(array $data, string $userId):array{
+   /**
+     * @param array $data Dados para update
+     * @param string $userId ID do usuário
+     * @return array ['query' => string, 'params' => array]
+     */
 
+   public static function query(array $data, string $userId):array{
       $params = [];
       $placeholders = [];
       $data['foreing_key'] = $userId;
       $query = '';
 
       foreach ($data as $field => $value) {
-         if ($field == 'id') continue;
-         if ($field == 'change_recurrence') continue;
-         if ($field == 'recurrence_id') continue;
+         if(in_array($field, ['id', 'change_recurrence', 'recurrence_id'], true)){continue;}
          $params[":$field"] = $value;
 
-         if ($field == 'date') continue;
-         if ($field == 'foreing_key') continue;
+         if(in_array($field, ['date', 'foreing_key'], true)){continue;}
          $placeholders[] = "`$field` = :$field";
       }
-      // echo json_encode($data);exit;
 
       if ($data['change_recurrence'] === true) {
-
-         //Change only the month of the date;
+         //Change only the day of the date;
          $params[':new_day'] = Utils::getDayOfTheDate($data['date']);
          $placeholders[] = "`date` = DATE_FORMAT(`date`, CONCAT('%Y-%m-', :new_day))";
 
@@ -33,13 +32,12 @@ class BuildEntryUpdateQuery{
          $placeholders = implode(',', $placeholders);
 
          $query =
-            "UPDATE `entries`
-                  SET $placeholders 
-                  WHERE `recurrence_id` = :recurrence_id 
-                  AND `foreing_key` = :foreing_key
-                  AND `date` >= :date";
-      } else {
+            "UPDATE `entries` SET $placeholders 
+            WHERE `recurrence_id` = :recurrence_id 
+               AND `foreing_key` = :foreing_key
+               AND `date` >= :date";
 
+      } else {
          $params[':id'] = $data['id'];
          $placeholders[] = "`id` = :id";
 
@@ -50,9 +48,9 @@ class BuildEntryUpdateQuery{
 
          $placeholders = implode(',', $placeholders);
          $query =
-            "UPDATE `entries` 
-                  SET $placeholders 
-                  WHERE `id` = :id  AND `foreing_key` = :foreing_key";
+           "UPDATE `entries` 
+            SET $placeholders 
+            WHERE `id` = :id  AND `foreing_key` = :foreing_key";
       }
 
       return ['query' => $query, 'params' => $params];

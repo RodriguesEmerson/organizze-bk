@@ -34,7 +34,7 @@
                   SELECT 
                      DATE_FORMAT(`date`, :yearMonth) AS month, `type`, SUM(`value`) AS total
                      FROM `entries`
-                     WHERE `foreing_key` = :userId
+                     WHERE `foreing_key` = :userId AND `effected` = 1
                      GROUP BY  month, `type`
                ) AS mensal
                ORDER BY month ASC' //Precisar ser ASC, quando o Front faz um loop ficará DESC
@@ -68,7 +68,6 @@
          $stmt->execute();
          return $stmt->fetchAll(PDO::FETCH_ASSOC);
       }
-
 
       public function insertEntry(array $data):bool{
          ['query' => $query, 'params' => $params] = BuildEntryInsertQuery::query($data);

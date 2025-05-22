@@ -24,9 +24,9 @@ class BuildEntryInsertQuery{
          //Moths from start to end date.
          $monthsFromStartToEndDate = $startDate->diff($endDate)->m ;
          
-         for($i = 1; $i <= $monthsFromStartToEndDate; $i++){
-            //It use the index as the number of months to add;
-            $currentDate = Utils::incrementMonth($data['date'], $i);
+         for($monthsToAdd = 1; $monthsToAdd <= $monthsFromStartToEndDate; $monthsToAdd++){
+            //It uses the index as the number of months to add;
+            $currentDate = Utils::incrementMonths($data['date'], $monthsToAdd);
 
             $placeholdersRow = [];
 
@@ -34,7 +34,7 @@ class BuildEntryInsertQuery{
                if($field == 'date'){$value = $currentDate;} //Change to new date;
                if($field == 'id'){$value = Utils::genereteUUID();} //Create a new UUID for the entry;
                if($field == 'effected'){$value = false;} //The other entries isn't effected yet;
-               $key = ":$field" . "_$i"; //placeholder - :field_1
+               $key = ":$field" . "_$monthsToAdd"; //placeholder - :field_1
                $placeholdersRow[] = $key; //Add the placeholder
                $params[$key] = $value; //Add the param - :field_1 = value;
             };
